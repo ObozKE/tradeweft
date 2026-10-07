@@ -1,0 +1,11 @@
+# 9-POINT PRE-DEPLOYMENT CHECKLIST (applies to EVERY file)
+
+1. **Strict authorization (no IDOR):** every protected page, Server Action and Route Handler verifies the authenticated user's UUID owns the requested resource, enforced in code AND by RLS.
+2. **Secure tokens/sessions:** no magic links or passwords exist, so apply this to OAuth and sessions: PKCE only, HttpOnly + Secure + SameSite=Lax cookies, no tokens in localStorage, redirect allowlist, and configure short JWT expiry with refresh-token rotation and reuse detection in Supabase (document the settings).
+3. **Hostile input validation:** Zod on every input (forms, query params, headers, cookies); typed Supabase queries only (no string-built SQL); escape all output and never use `dangerouslySetInnerHTML` with user data.
+4. **Locked-down CORS and headers:** allow only production and staging origins from an `ALLOWED_ORIGINS` env var; set `serverActions.allowedOrigins`; add a nonce-based CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and `frame-ancestors 'none'`.
+5. **Rate limiting:** Upstash sliding-window limits keyed by IP (and user ID when known) on login/signup initiation, `/auth/callback`, onboarding submission and any Server Action that hits the database. Fail closed in production. Return a friendly localized "try again later" message.
+6. **Custom error handling:** a unified `AppError` type and `Result` pattern for Server Actions; `error.tsx`, `global-error.tsx`, `not-found.tsx` and an auth error page. NEVER leak stack traces, queries or env values to the client.
+7. **Targeted DB indexing:** as specified in the data model, on all foreign keys and hot WHERE columns.
+8. **Structured logging:** pino JSON logs with request IDs, secrets/tokens redacted and emails masked. Log events like `auth.login.started|succeeded|failed`, `auth.signup.completed`, `onboarding.completed` and `rate_limit.hit`. Provide an easy hook for Sentry or a log drain.
+9. **Deployment readiness:** stateless, Vercel/AWS-ready; Zod-validated env (`env.ts`) that fails fast at boot; `.env.example`; separate Supabase projects for staging and production; migrations in the repo using backward-compatible expand/contract changes so rollbacks are safe; `/api/health`; GitHub Actions CI running typecheck, lint, unit tests, pgTAP and build.

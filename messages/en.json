@@ -1,0 +1,78 @@
+{
+  "brand": {
+    "name": "Trade Weft",
+    "tagline": "Trade services, build trust. The B2B barter marketplace for Africa."
+  },
+  "common": {
+    "continueWithGoogle": "Continue with Google",
+    "signOut": "Sign Out",
+    "loading": "Loading...",
+    "submitting": "Submitting...",
+    "back": "Back",
+    "required": "Required",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back. Continue with Google to access your barter dashboard.",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create an account"
+    },
+    "signup": {
+      "title": "Create Your Account",
+      "subtitle": "Start trading your professional services with local businesses and freelancers.",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "consentNotice": "By clicking \"Continue with Google\", you agree to our Terms of Service and acknowledge our Privacy Policy."
+    },
+    "error": {
+      "title": "Authentication Notice",
+      "defaultMessage": "We were unable to complete the sign-in request. Please try again.",
+      "accessDenied": "Google authentication was cancelled. Please try again when you are ready.",
+      "expiredCode": "The authentication session expired. Please sign in again.",
+      "backToLogin": "Return to Sign In"
+    }
+  },
+  "onboarding": {
+    "title": "Complete Your Profile",
+    "subtitle": "Provide your professional details and location to start trading in Nairobi.",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "e.g., Wangari Maathai or Studio Nomi",
+    "accountType": "Account Type",
+    "freelancer": "Freelancer / Solo Professional",
+    "business": "Registered Business / Agency",
+    "businessName": "Business Name",
+    "businessNamePlaceholder": "e.g., Acme Tech Solutions Ltd",
+    "country": "Country",
+    "city": "City / County",
+    "area": "Neighborhood / Sub-county",
+    "selectCountry": "Select country",
+    "selectCity": "Select city",
+    "selectArea": "Select neighborhood",
+    "remoteDelivery": "Remote Service Delivery",
+    "remoteDeliveryDescription": "I can deliver services remotely to clients across Kenya and other regions.",
+    "termsConsent": "I agree to the Trade Weft Marketplace Terms and Kenya Data Protection Act compliance policy.",
+    "submit": "Finish Onboarding & Enter Dashboard"
+  },
+  "dashboard": {
+    "title": "Barter Dashboard",
+    "welcome": "Welcome back, {name}",
+    "accountType": "Account Type",
+    "location": "Location",
+    "remoteDelivery": "Remote Delivery",
+    "enabled": "Active",
+    "disabled": "Local only",
+    "phase1Notice": "Phase 1 Authentication & Onboarding Active",
+    "phase1Description": "Your profile is registered with Supabase Postgres and verified under strict Row Level Security. Service listings, barter agreements, and trust ledger will plug in next."
+  },
+  "errors": {
+    "RATE_LIMITED": "Too many requests. Please wait a moment and try again.",
+    "AUTH_REQUIRED": "Authentication is required to view this page.",
+    "FORBIDDEN": "You are not authorized to perform this operation.",
+    "VALIDATION_FAILED": "Please check your entries and try again.",
+    "OAUTH_FAILED": "Unable to connect with Google OAuth. Please try again.",
+    "INTERNAL_ERROR": "A temporary service error occurred. Please try again shortly."
+  }
+}

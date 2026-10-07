@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Pine Brand Scale */
+  --color-pine-50: #f2faf8;
+  --color-pine-100: #e1f3f0;
+  --color-pine-200: #bde5df;
+  --color-pine-300: #8acfc5;
+  --color-pine-400: #4db3a5;
+  --color-pine-500: #1a9486;
+  --color-pine-600: #01796f;
+  --color-pine-700: #14574a;
+  --color-pine-800: #0f4037;
+  --color-pine-900: #0b2e27;
+  --color-pine-950: #07201b;
+
+  /* Neutrals */
+  --color-ink: #151515;
+  --color-ink-2: #2c2c2c;
+  --color-text-secondary: #595959;
+  --color-text-muted: #6b6b6b;
+  --color-border: #e6e6e6;
+  --color-input-border: #8c8c8c;
+  --color-surface-sunken: #f1f1f1;
+  --color-tile-gap: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-background: #f7f7f7;
+
+  /* Accents & Feedback (Strict Zero-Red: Amber for errors and warnings) */
+  --color-orchid-50: #faeaf8;
+  --color-orchid-200: #f3cbee;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+
+  /* Semantic UI Tokens */
+  --color-primary: #01796f;
+  --color-primary-foreground: #ffffff;
+  --color-destructive: #b45309;
+  --color-destructive-foreground: #ffffff;
+  --color-muted: #f1f1f1;
+  --color-muted-foreground: #6b6b6b;
+  --color-accent: #e1f3f0;
+  --color-accent-foreground: #01796f;
+  --color-ring: #1a9486;
+
+  /* Radius Scale */
+  --radius-xl: 28px;
+  --radius-lg: 24px;
+  --radius-md: 20px;
+  --radius-sm: 16px;
+  --radius-button: 12px;
+  --radius-chip: 9999px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-pine-500);
+  outline-offset: 2px;
+}

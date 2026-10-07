@@ -1,0 +1,78 @@
+{
+  "brand": {
+    "name": "Trade Weft",
+    "tagline": "Badilishana huduma, jenga uaminifu. Soko la B2B la kubadilishana huduma barani Afrika."
+  },
+  "common": {
+    "continueWithGoogle": "Endelea na Google",
+    "signOut": "Ondoka",
+    "loading": "Inapakia...",
+    "submitting": "Inatuma...",
+    "back": "Rudi",
+    "required": "Inahitajika",
+    "yes": "Ndiyo",
+    "no": "Hapana"
+  },
+  "auth": {
+    "login": {
+      "title": "Ingia",
+      "subtitle": "Karibu tena. Endelea na Google kufikia dashibodi yako.",
+      "noAccount": "Huna akaunti?",
+      "createAccount": "Fungua akaunti"
+    },
+    "signup": {
+      "title": "Fungua Akaunti Yako",
+      "subtitle": "Anza kubadilishana huduma zako za kitaalamu bila pesa taslimu.",
+      "hasAccount": "Tayari una akaunti?",
+      "signIn": "Ingia",
+      "consentNotice": "Kwa kubofya \"Endelea na Google\", unakubali Sheria na Masharti yetu na Sera ya Faragha."
+    },
+    "error": {
+      "title": "Taarifa ya Kuingia",
+      "defaultMessage": "Haikuwezekana kukamilisha ombi la kuingia. Tafadhali jaribu tena.",
+      "accessDenied": "Uthibitishaji wa Google ulikatizwa. Tafadhali jaribu tena ukiwa tayari.",
+      "expiredCode": "Muda wa kipindi cha uthibitishaji umekwisha. Tafadhali ingia tena.",
+      "backToLogin": "Rudi Kwenye Kuingia"
+    }
+  },
+  "onboarding": {
+    "title": "Kamilisha Wasifu Wako",
+    "subtitle": "Toa maelezo yako ya kitaalamu na eneo ili kuanza kubadilishana Nairobi.",
+    "displayName": "Jina Lako / Jina la Wasifu",
+    "displayNamePlaceholder": "mfano, Wangari Maathai au Studio Nomi",
+    "accountType": "Aina ya Akaunti",
+    "freelancer": "Mtaalamu Huru",
+    "business": "Biashara Iliyosajiliwa",
+    "businessName": "Jina la Biashara",
+    "businessNamePlaceholder": "mfano, Acme Tech Solutions Ltd",
+    "country": "Nchi",
+    "city": "Jiji / Kaunti",
+    "area": "Mtaa / Eneo",
+    "selectCountry": "Chagua nchi",
+    "selectCity": "Chagua jiji",
+    "selectArea": "Chagua eneo",
+    "remoteDelivery": "Utoaji wa Huduma Mtandaoni",
+    "remoteDeliveryDescription": "Ninaweza kutoa huduma kwa wateja kote Kenya na nchi nyingine.",
+    "termsConsent": "Ninakubali Masharti ya Soko la Trade Weft na sheria ya ulinzi wa data ya Kenya.",
+    "submit": "Kamilisha Wasifu na Ingia Dashibodi"
+  },
+  "dashboard": {
+    "title": "Dashibodi ya Biashara",
+    "welcome": "Karibu tena, {name}",
+    "accountType": "Aina ya Akaunti",
+    "location": "Mahali",
+    "remoteDelivery": "Huduma za Mbali",
+    "enabled": "Inatumika",
+    "disabled": "Eneo pekee",
+    "phase1Notice": "Awamu ya Kwanza ya Uthibitishaji Iko Kazini",
+    "phase1Description": "Wasifu wako umesajiliwa na Supabase Postgres chini ya usalama thabiti wa RLS."
+  },
+  "errors": {
+    "RATE_LIMITED": "Maombi mengi mno. Tafadhali subiri kidogo kisha ujaribu tena.",
+    "AUTH_REQUIRED": "Uthibitishaji unahitajika ili kutazama ukurasa huu.",
+    "FORBIDDEN": "Huna idhini ya kufanya shughuli hii.",
+    "VALIDATION_FAILED": "Tafadhali kagua taarifa ulizoingiza kisha ujaribu tena.",
+    "OAUTH_FAILED": "Haikuwezekana kuungana na Google OAuth. Tafadhali jaribu tena.",
+    "INTERNAL_ERROR": "Hitilafu ya muda imetokea. Tafadhali jaribu tena baada ya muda mfupi."
+  }
+}
