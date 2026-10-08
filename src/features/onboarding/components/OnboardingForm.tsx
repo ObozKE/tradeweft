@@ -1,8 +1,13 @@
 'use client';
 
-import React, { useActionState, useState, useMemo } from 'react';
+import React, { useActionState, useState, useMemo, useEffect } from 'react';
 import { submitOnboardingAction } from '../actions/onboarding.actions';
-import type { Country, Location } from '../queries/locations.queries';
+import {
+  type Country,
+  type Location,
+  FALLBACK_COUNTRIES,
+  FALLBACK_LOCATIONS,
+} from '../data/locations.constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,8 +23,8 @@ export interface OnboardingFormProps {
 
 export function OnboardingForm({
   initialDisplayName = '',
-  countries,
-  locations,
+  countries = [],
+  locations = [],
 }: OnboardingFormProps) {
   const [state, formAction, isPending] = useActionState(
     submitOnboardingAction,
@@ -27,40 +32,87 @@ export function OnboardingForm({
   );
 
   const [accountType, setAccountType] = useState<'freelancer' | 'business'>('freelancer');
+
+  // Resilient fallback lists guarantee dropdowns always have options
+  const effectiveCountries = useMemo(() => {
+    return countries && countries.length > 0 ? countries : FALLBACK_COUNTRIES;
+  }, [countries]);
+
+  const effectiveLocations = useMemo(() => {
+    return locations && locations.length > 0 ? locations : FALLBACK_LOCATIONS;
+  }, [locations]);
+
   const [selectedCountry, setSelectedCountry] = useState<string>(
-    countries[0]?.code || 'KE'
+    effectiveCountries[0]?.code || 'KE'
   );
 
-  // Group locations into cities and areas based on the tree
+  // Filter cities for selected country
   const cities = useMemo(() => {
-    return locations.filter(
+    return effectiveLocations.filter(
       (loc) => loc.country_code === selectedCountry && loc.level === 'city'
     );
-  }, [locations, selectedCountry]);
+  }, [effectiveLocations, selectedCountry]);
 
   const [selectedCityId, setSelectedCityId] = useState<string>(
     cities[0]?.id || ''
   );
 
+  // Filter areas for selected city
   const areas = useMemo(() => {
-    return locations.filter(
+    return effectiveLocations.filter(
       (loc) =>
         loc.country_code === selectedCountry &&
         loc.level === 'area' &&
         (!selectedCityId || loc.parent_id === selectedCityId)
     );
-  }, [locations, selectedCountry, selectedCityId]);
+  }, [effectiveLocations, selectedCountry, selectedCityId]);
 
   const [selectedAreaId, setSelectedAreaId] = useState<string>(
     areas[0]?.id || ''
   );
 
+  // Synchronize city selection whenever cities array changes
+  useEffect(() => {
+    if (cities.length > 0 && (!selectedCityId || !cities.some((c) => c.id === selectedCityId))) {
+      setSelectedCityId(cities[0].id);
+    }
+  }, [cities, selectedCityId]);
+
+  // Synchronize area selection whenever areas array changes
+  useEffect(() => {
+    if (areas.length > 0 && (!selectedAreaId || !areas.some((a) => a.id === selectedAreaId))) {
+      setSelectedAreaId(areas[0].id);
+    }
+  }, [areas, selectedAreaId]);
+
+  // When country changes, update city and area
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCountry = e.target.value;
+    setSelectedCountry(newCountry);
+    const newCities = effectiveLocations.filter(
+      (loc) => loc.country_code === newCountry && loc.level === 'city'
+    );
+    const firstCityId = newCities[0]?.id || '';
+    setSelectedCityId(firstCityId);
+
+    const newAreas = effectiveLocations.filter(
+      (loc) =>
+        loc.country_code === newCountry &&
+        loc.level === 'area' &&
+        (!firstCityId || loc.parent_id === firstCityId)
+    );
+    setSelectedAreaId(newAreas[0]?.id || '');
+  };
+
   // When city changes, update selected area
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCityId = e.target.value;
     setSelectedCityId(newCityId);
-    const availableAreas = locations.filter(
-      (loc) => loc.level === 'area' && loc.parent_id === newCityId
+    const availableAreas = effectiveLocations.filter(
+      (loc) =>
+        loc.country_code === selectedCountry &&
+        loc.level === 'area' &&
+        loc.parent_id === newCityId
     );
     if (availableAreas.length > 0) {
       setSelectedAreaId(availableAreas[0].id);
@@ -177,7 +229,7 @@ export function OnboardingForm({
           Location & Matching
         </p>
 
-        {/* Country */}
+        {/* Country Dropdown */}
         <div className="space-y-2">
           <Label htmlFor="countryCode" requiredIndicator>
             Country
@@ -186,17 +238,17 @@ export function OnboardingForm({
             id="countryCode"
             name="countryCode"
             value={selectedCountry}
-            onChange={(e) => setSelectedCountry(e.target.value)}
+            onChange={handleCountryChange}
           >
-            {countries.map((c) => (
-              <option key={c.code} value={c.code}>
+            {effectiveCountries.map((c) => (
+              <option key={c.code} value={c.code} className="text-ink bg-white">
                 {c.name} ({c.currency_code})
               </option>
             ))}
           </Select>
         </div>
 
-        {/* City */}
+        {/* City Dropdown */}
         <div className="space-y-2">
           <Label htmlFor="cityId" requiredIndicator>
             City / County
@@ -208,15 +260,21 @@ export function OnboardingForm({
             onChange={handleCityChange}
             error={!!state?.fieldErrors?.cityId}
           >
-            {cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
+            {cities.length === 0 ? (
+              <option value="" disabled className="text-text-muted bg-white">
+                No cities available
               </option>
-            ))}
+            ) : (
+              cities.map((city) => (
+                <option key={city.id} value={city.id} className="text-ink bg-white">
+                  {city.name}
+                </option>
+              ))
+            )}
           </Select>
         </div>
 
-        {/* Neighborhood / Area */}
+        {/* Neighborhood / Area Dropdown */}
         <div className="space-y-2">
           <Label htmlFor="areaId" requiredIndicator>
             Neighborhood / Sub-county
@@ -228,11 +286,17 @@ export function OnboardingForm({
             onChange={(e) => setSelectedAreaId(e.target.value)}
             error={!!state?.fieldErrors?.areaId}
           >
-            {areas.map((area) => (
-              <option key={area.id} value={area.id}>
-                {area.name}
+            {areas.length === 0 ? (
+              <option value="" disabled className="text-text-muted bg-white">
+                No neighborhoods available
               </option>
-            ))}
+            ) : (
+              areas.map((area) => (
+                <option key={area.id} value={area.id} className="text-ink bg-white">
+                  {area.name}
+                </option>
+              ))
+            )}
           </Select>
           {state?.fieldErrors?.areaId && (
             <p className="text-xs text-amber-800 font-medium">
@@ -250,7 +314,7 @@ export function OnboardingForm({
             name="remoteDelivery"
             value="true"
             defaultChecked={false}
-            className="mt-1 h-5 w-5 rounded border-input-border text-primary focus:ring-pine-500 accent-primary"
+            className="mt-1 h-5 w-5 rounded border-input-border text-primary focus:ring-pine-500 accent-primary cursor-pointer"
           />
           <div className="text-sm">
             <span className="font-medium text-ink">Remote Service Delivery</span>
@@ -269,7 +333,7 @@ export function OnboardingForm({
             name="termsAccepted"
             value="true"
             required
-            className="mt-1 h-5 w-5 rounded border-input-border text-primary focus:ring-pine-500 accent-primary"
+            className="mt-1 h-5 w-5 rounded border-input-border text-primary focus:ring-pine-500 accent-primary cursor-pointer"
           />
           <span className="text-xs text-text-secondary leading-relaxed">
             I accept the Trade Weft B2B Barter Marketplace Terms of Service and acknowledge the Kenya Data Protection Act compliance policy (v1.0-ke-2026).

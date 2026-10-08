@@ -83,13 +83,44 @@ export async function submitOnboardingAction(
     .eq('id', user.id);
 
   if (updateError) {
-    logger.error(
-      { userId: user.id, error: updateError.message, event: 'onboarding.failed' },
-      'Failed to update profile during onboarding'
-    );
-    return {
-      error: 'A database error occurred while saving your profile. Please try again.',
-    };
+    // If the database has not yet been seeded with the locations table, retry without location FKs
+    if (updateError.message.toLowerCase().includes('foreign key') || updateError.message.toLowerCase().includes('fkey')) {
+      logger.warn(
+        { userId: user.id, error: updateError.message },
+        'Location FK missing in database. Retrying profile update without location FKs.'
+      );
+      const { error: retryError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: validData.displayName,
+          account_type: validData.accountType,
+          business_name: validData.businessName || null,
+          remote_delivery: validData.remoteDelivery,
+          terms_accepted_at: now,
+          terms_version: validData.termsVersion,
+          onboarding_completed_at: now,
+          updated_at: now,
+        })
+        .eq('id', user.id);
+
+      if (retryError) {
+        logger.error(
+          { userId: user.id, error: retryError.message, event: 'onboarding.failed' },
+          'Failed to update profile during onboarding retry'
+        );
+        return {
+          error: 'A database error occurred while saving your profile. Please try again.',
+        };
+      }
+    } else {
+      logger.error(
+        { userId: user.id, error: updateError.message, event: 'onboarding.failed' },
+        'Failed to update profile during onboarding'
+      );
+      return {
+        error: 'A database error occurred while saving your profile. Please try again.',
+      };
+    }
   }
 
   logger.info(
