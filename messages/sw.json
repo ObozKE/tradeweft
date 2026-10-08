@@ -83,5 +83,20 @@
     "VALIDATION_FAILED": "Tafadhali kagua taarifa ulizoingiza kisha ujaribu tena.",
     "OAUTH_FAILED": "Haikuwezekana kuungana na mtoa huduma wa uthibitisho. Tafadhali jaribu tena.",
     "INTERNAL_ERROR": "Hitilafu ya muda imetokea. Tafadhali jaribu tena baada ya muda mfupi."
+  },
+  "packages": {
+    "title": "Vifurushi Vyangu vya Huduma",
+    "subtitle": "Simamia matoleo yako ya huduma na vifurushi vya kubadilishana biashara.",
+    "create": "Unda Kifurushi",
+    "edit": "Hariri Kifurushi",
+    "explore": "Gundua Vifurushi vya Huduma",
+    "noPackages": "Bado Hakuna Vifurushi vya Huduma",
+    "statusPublished": "Imechapishwa",
+    "statusDraft": "Rasimu",
+    "statusPaused": "Imesitishwa",
+    "statusArchived": "Imehifadhiwa",
+    "publishedNotice": "Kifurushi kimechapishwa kwa mafanikio sokoni.",
+    "pausedNotice": "Kifurushi kimesitishwa na hakionekani kwenye utafutaji.",
+    "archivedNotice": "Kifurushi kimehifadhiwa."
   }
 }

@@ -121,20 +121,25 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Service Listings */}
-          <div className="flex flex-col justify-between rounded-lg border border-border bg-white p-6 shadow-sm">
+          {/* Service Packages (Phase 2 Active) */}
+          <div className="flex flex-col justify-between rounded-lg border border-pine-300 bg-white p-6 shadow-sm">
             <div className="space-y-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-chip bg-surface-sunken text-ink">
+              <div className="flex h-10 w-10 items-center justify-center rounded-chip bg-pine-100 text-pine-800">
                 <Layers className="h-5 w-5" aria-hidden="true" />
               </div>
-              <h3 className="text-base font-semibold text-ink">Service Listings</h3>
+              <h3 className="text-base font-semibold text-ink">Service Packages</h3>
               <p className="text-xs text-text-secondary leading-relaxed">
-                Plugs into <code className="rounded bg-muted px-1 py-0.5 text-xs text-pine-800">src/features/listings</code>. Allows businesses to list skills offered and skills sought for trade.
+                Create, edit, preview, and manage your strictly scoped barter packages.
               </p>
             </div>
-            <span className="mt-4 inline-block text-[11px] font-medium uppercase tracking-[0.08em] text-text-muted">
-              Phase 2 Ready
-            </span>
+            <div className="mt-4 pt-3 border-t border-border">
+              <a
+                href="/dashboard/packages"
+                className="inline-flex items-center text-xs font-semibold text-pine-700 hover:text-pine-900 transition"
+              >
+                Manage Packages →
+              </a>
+            </div>
           </div>
 
           {/* Barter Agreements */}

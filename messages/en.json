@@ -83,5 +83,20 @@
     "VALIDATION_FAILED": "Please check your entries and try again.",
     "OAUTH_FAILED": "Unable to connect with authentication provider. Please try again.",
     "INTERNAL_ERROR": "A temporary service error occurred. Please try again shortly."
+  },
+  "packages": {
+    "title": "My Service Packages",
+    "subtitle": "Manage your service offerings and barter trade packages.",
+    "create": "Create Package",
+    "edit": "Edit Package",
+    "explore": "Explore Service Packages",
+    "noPackages": "No Service Packages Yet",
+    "statusPublished": "Published",
+    "statusDraft": "Draft",
+    "statusPaused": "Paused",
+    "statusArchived": "Archived",
+    "publishedNotice": "Package published successfully to public marketplace.",
+    "pausedNotice": "Package paused. It is now hidden from search.",
+    "archivedNotice": "Package archived."
   }
 }

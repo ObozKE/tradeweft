@@ -145,3 +145,6 @@ export const emailLoginLimiter = createRateLimiter('auth:email_login', 5, 60);
 export const emailSignupLimiter = createRateLimiter('auth:email_signup', 5, 60);
 export const onboardingLimiter = createRateLimiter('onboarding', 10, 60);
 export const serverActionLimiter = createRateLimiter('action', 30, 60);
+export const packageActionLimiter = createRateLimiter('package:action', 30, 60);
+export const publishLimiter = createRateLimiter('package:publish', 10, 60);
+export const exploreSearchLimiter = createRateLimiter('explore:search', 60, 60);

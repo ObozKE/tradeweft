@@ -34,7 +34,7 @@ src/
 │   ├── auth/             # [Phase 1: COMPLETE] Supabase Google OAuth PKCE, Email & Password Auth, Callbacks, Sign-out
 │   ├── onboarding/       # [Phase 1: COMPLETE] Hierarchical location cascading, Profile setup
 │   │
-│   ├── listings/         # [Phase 2 Plug-in] Service offers & service requests
+│   ├── packages/         # [Phase 2: COMPLETE] Service Packages, Category taxonomy, Versions, Search/Explore
 │   ├── agreements/       # [Phase 3 Plug-in] Barter trade contract proposals & milestone tracking
 │   ├── trust/            # [Phase 4 Plug-in] Double-blind reviews, dispute ledger, reputation score
 │   ├── payments/         # [Phase 5 Plug-in] M-Pesa Daraja escrow & top-up barter settlements
@@ -42,20 +42,29 @@ src/
 │   └── admin/            # [Phase 7 Plug-in] Ops moderation & dispute adjudication
 ```
 
-### 2.1 Service Listings (`src/features/listings`)
-- **Purpose**: Enables freelancers and businesses to post:
-  - *Offerings*: Services they can deliver (e.g., "Full-stack Next.js web application", "Tax advisory & filing").
-  - *Needs*: Services they want in return (e.g., "Physiotherapy sessions in Kilimani", "Office signage branding").
-- **Database Tables**:
-  - `listings`: `id` uuid, `user_id` FK to `profiles(id)`, `type` enum (`offer`, `request`), `title`, `description`, `category_id`, `country_code`, `city_id`, `area_id`, `remote_ok` bool, `status` enum (`active`, `paused`, `fulfilled`), `estimated_value_minor` integer.
-  - `listing_tags`: tags for indexing and search matching.
-- **RLS**: Users can insert/update only their own listings (`user_id = (select auth.uid())`). Public search allows `select` on `status = 'active'`.
+### 2.1 Service Packages (`src/features/packages`)
+- **Purpose**: Strictly scoped service listings that every future barter agreement will reference.
+  - *Offerings*: Fixed deliverables, turnaround time, monthly capacity, indicative value, exclusions.
+  - *Needs*: Up to 5 categories the provider is seeking in return for automated matchmaking.
+- **Database Tables & Views**:
+  - `service_categories` & `service_category_translations`: Hierarchical taxonomy (English & Swahili).
+  - `service_packages`: Time-ordered UUIDv7 rows with generated multilingual `search_vector`.
+  - `service_package_seeking_categories`: Composite key `(package_id, category_id)` for reverse lookup.
+  - `service_package_versions`: Immutable audit snapshots created upon each publish. Future Phase 3 agreements reference a specific version ID so subsequent edits cannot rewrite an agreed deal.
+  - `domain_events`: Insert-only outbox table capturing `package.created`, `package.published`, `package.paused`, `package.archived`.
+  - `public_provider_profiles`: Security Definer view exposing only sanitized provider metadata (`display_name`, `business_name`, `avatar_url`, `city_id`, `area_id`, `member_since`) for published providers.
+- **Extension Points**:
+  1. *Ranking Strategy (Top Ads / Boost)*: Paid promotions will join an auxiliary `listing_promotions` table with an expiration timestamp, leaving `service_packages` schema unmodified.
+  2. *Publish Gate*: `canPublish()` in `src/features/packages/utils/publish-gate.ts` provides the single point where future identity & verification checks will plug in.
+  3. *Trade Proposals*: The detail page reserves `<TradeActionSlot />`, enabling Phase 3 trade initiation without modifying page templates.
+  4. *Domain Events Outbox*: Background event consumers will process `domain_events` for notifications and recommendation graphs.
+  5. *Geographic Matching Scope*: Matching logic in `search_service_packages` is centralized in one RPC, ready to widen from neighborhood/city to regional or national tiers per country configuration.
 
 ### 2.2 Barter Agreements (`src/features/agreements`)
 - **Purpose**: Contractual agreement binding two participants to an equal exchange.
 - **Workflow**:
-  1. User A proposes trade to User B (Listing X for Listing Y).
-  2. Both parties review deliverables, deadlines, and milestones.
+  1. User A proposes trade to User B referencing `service_package_versions(id)`.
+  2. Both parties review deliverables, deadlines, and milestones frozen in the version snapshot.
   3. Acceptance triggers contract locking and optional escrow hold.
 - **Database Tables**:
   - `barter_agreements`: `id` uuid, `initiator_id` FK, `recipient_id` FK, `status` enum (`draft`, `proposed`, `active`, `completed`, `disputed`, `cancelled`), `terms_version`, `signed_at`.
