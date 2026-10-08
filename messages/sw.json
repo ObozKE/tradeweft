@@ -5,6 +5,10 @@
   },
   "common": {
     "continueWithGoogle": "Endelea na Google",
+    "or": "au",
+    "email": "Barua Pepe",
+    "password": "Nenosiri",
+    "confirmPassword": "Thibitisha Nenosiri",
     "signOut": "Ondoka",
     "loading": "Inapakia...",
     "submitting": "Inatuma...",
@@ -16,21 +20,26 @@
   "auth": {
     "login": {
       "title": "Ingia",
-      "subtitle": "Karibu tena. Endelea na Google kufikia dashibodi yako.",
+      "subtitle": "Karibu tena. Ingia na Google au barua pepe kufikia dashibodi yako.",
+      "signInButton": "Ingia kwa Barua Pepe",
       "noAccount": "Huna akaunti?",
-      "createAccount": "Fungua akaunti"
+      "createAccount": "Fungua akaunti",
+      "invalidCredentials": "Barua pepe au nenosiri si sahihi. Tafadhali jaribu tena."
     },
     "signup": {
       "title": "Fungua Akaunti Yako",
       "subtitle": "Anza kubadilishana huduma zako za kitaalamu bila pesa taslimu.",
+      "signUpButton": "Fungua Akaunti kwa Barua Pepe",
       "hasAccount": "Tayari una akaunti?",
       "signIn": "Ingia",
-      "consentNotice": "Kwa kubofya \"Endelea na Google\", unakubali Sheria na Masharti yetu na Sera ya Faragha."
+      "consentNotice": "Kwa kufungua akaunti, unakubali Sheria na Masharti yetu na Sera ya Faragha.",
+      "emailConfirmationSent": "Barua pepe ya uthibitisho imetumwa. Tafadhali thibitisha kisha uingie.",
+      "alreadyRegistered": "Akaunti yenye barua pepe hii tayari ipo. Tafadhali ingia."
     },
     "error": {
       "title": "Taarifa ya Kuingia",
       "defaultMessage": "Haikuwezekana kukamilisha ombi la kuingia. Tafadhali jaribu tena.",
-      "accessDenied": "Uthibitishaji wa Google ulikatizwa. Tafadhali jaribu tena ukiwa tayari.",
+      "accessDenied": "Uthibitishaji ulikatizwa. Tafadhali jaribu tena ukiwa tayari.",
       "expiredCode": "Muda wa kipindi cha uthibitishaji umekwisha. Tafadhali ingia tena.",
       "backToLogin": "Rudi Kwenye Kuingia"
     }
@@ -72,7 +81,7 @@
     "AUTH_REQUIRED": "Uthibitishaji unahitajika ili kutazama ukurasa huu.",
     "FORBIDDEN": "Huna idhini ya kufanya shughuli hii.",
     "VALIDATION_FAILED": "Tafadhali kagua taarifa ulizoingiza kisha ujaribu tena.",
-    "OAUTH_FAILED": "Haikuwezekana kuungana na Google OAuth. Tafadhali jaribu tena.",
+    "OAUTH_FAILED": "Haikuwezekana kuungana na mtoa huduma wa uthibitisho. Tafadhali jaribu tena.",
     "INTERNAL_ERROR": "Hitilafu ya muda imetokea. Tafadhali jaribu tena baada ya muda mfupi."
   }
 }

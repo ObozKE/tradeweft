@@ -8,6 +8,7 @@ interface LoginPageProps {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const t = await getTranslations('auth.login');
+  const tCommon = await getTranslations('common');
   const params = await searchParams;
   const rawNext = typeof params.next === 'string' ? params.next : undefined;
   const next = sanitizeRedirectUrl(rawNext);
@@ -17,6 +18,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       mode="login"
       title={t('title')}
       subtitle={t('subtitle')}
+      emailSubmitButtonLabel={t('signInButton')}
+      orLabel={tCommon('or')}
       footerPrompt={t('noAccount')}
       footerLinkText={t('createAccount')}
       footerLinkHref="/signup"

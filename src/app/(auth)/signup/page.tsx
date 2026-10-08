@@ -8,6 +8,7 @@ interface SignupPageProps {
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
   const t = await getTranslations('auth.signup');
+  const tCommon = await getTranslations('common');
   const params = await searchParams;
   const rawNext = typeof params.next === 'string' ? params.next : undefined;
   const next = sanitizeRedirectUrl(rawNext);
@@ -18,6 +19,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
       title={t('title')}
       subtitle={t('subtitle')}
       consentNotice={t('consentNotice')}
+      emailSubmitButtonLabel={t('signUpButton')}
+      orLabel={tCommon('or')}
       footerPrompt={t('hasAccount')}
       footerLinkText={t('signIn')}
       footerLinkHref="/login"

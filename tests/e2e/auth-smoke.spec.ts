@@ -17,26 +17,37 @@ test.describe('Authentication & Landing Smoke Tests', () => {
     await expect(getStartedLink).toHaveAttribute('href', '/signup');
   });
 
-  test('Login page renders split layout and Google sign-in button', async ({ page }) => {
+  test('Login page renders Google OAuth and email/password form', async ({ page }) => {
     await page.goto('/login');
 
     await expect(page.getByRole('heading', { name: /Sign In/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Continue with Google/i })).toBeVisible();
+
+    // Check email & password inputs
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('input[type="password"]')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Sign In with Email/i })).toBeVisible();
 
     // Verify link to signup
     const createAccountLink = page.getByRole('link', { name: /Create an account/i });
     await expect(createAccountLink).toBeVisible();
   });
 
-  test('Signup page renders Terms & Privacy consent notice', async ({ page }) => {
+  test('Signup page renders Google OAuth, email form, and Terms consent', async ({ page }) => {
     await page.goto('/signup');
 
     await expect(page.getByRole('heading', { name: /Create Your Account/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Continue with Google/i })).toBeVisible();
 
+    // Check email, password, and confirm password inputs
+    await expect(page.locator('input[type="email"]')).toBeVisible();
+    await expect(page.locator('input[name="password"]')).toBeVisible();
+    await expect(page.locator('input[name="confirmPassword"]')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Create Account with Email/i })).toBeVisible();
+
     // Check terms consent notice
     await expect(
-      page.getByText(/By clicking "Continue with Google", you agree to our Terms of Service/i)
+      page.getByText(/By creating an account, you agree to our Terms of Service/i)
     ).toBeVisible();
   });
 

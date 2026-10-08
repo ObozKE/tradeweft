@@ -43,7 +43,10 @@ Trade Weft uses Google OAuth exclusively with PKCE.
    - Enable **Google Provider**.
    - Paste the **Client ID** and **Client Secret** generated in Google Cloud.
    - Save changes.
-2. In **Authentication -> URL Configuration**:
+2. In **Authentication -> Providers -> Email**:
+   - Enable **Email provider**.
+   - **Confirm email**: If enabled, new email signups will receive an email verification link before their session is activated; if disabled in local dev or initial staging, new signups receive immediate session tokens and proceed straight to onboarding.
+3. In **Authentication -> URL Configuration**:
    - **Site URL**:
      - Localhost: `http://localhost:3000`
      - Staging: `https://staging.tradeweft.com`
@@ -52,11 +55,10 @@ Trade Weft uses Google OAuth exclusively with PKCE.
      - `http://localhost:3000/auth/callback`
      - `https://staging.tradeweft.com/auth/callback`
      - `https://tradeweft.com/auth/callback`
-3. **Session & Security Settings** (Item 2 of Pre-deployment Checklist):
+4. **Session & Security Settings** (Item 2 of Pre-deployment Checklist):
    - **JWT Expiry**: Set to `3600` seconds (1 hour) or `1800` seconds (30 minutes).
    - **Refresh Token Rotation**: **Enabled** (generates a new refresh token every time one is used).
    - **Reuse Detection**: **Enabled** (if a revoked refresh token is re-submitted, Supabase immediately invalidates all active sessions for that user).
-   - **Disable Email Signups & Magic Links**: Ensure email signup provider is toggled off; Google is the sole authentication provider.
 
 ---
 

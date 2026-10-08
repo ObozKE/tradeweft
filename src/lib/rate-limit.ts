@@ -141,5 +141,7 @@ export function createRateLimiter(
 
 export const authCallbackLimiter = createRateLimiter('auth:callback', 15, 60);
 export const authInitiateLimiter = createRateLimiter('auth:initiate', 20, 60);
+export const emailLoginLimiter = createRateLimiter('auth:email_login', 5, 60);
+export const emailSignupLimiter = createRateLimiter('auth:email_signup', 5, 60);
 export const onboardingLimiter = createRateLimiter('onboarding', 10, 60);
 export const serverActionLimiter = createRateLimiter('action', 30, 60);

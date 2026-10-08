@@ -31,7 +31,7 @@ Trade Weft is a production-grade B2B service barter marketplace engineered for A
 ```
 src/
 ├── features/
-│   ├── auth/             # [Phase 1: COMPLETE] Supabase Google OAuth PKCE, Callbacks, Sign-out
+│   ├── auth/             # [Phase 1: COMPLETE] Supabase Google OAuth PKCE, Email & Password Auth, Callbacks, Sign-out
 │   ├── onboarding/       # [Phase 1: COMPLETE] Hierarchical location cascading, Profile setup
 │   │
 │   ├── listings/         # [Phase 2 Plug-in] Service offers & service requests

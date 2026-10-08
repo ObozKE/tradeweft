@@ -5,6 +5,10 @@
   },
   "common": {
     "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
     "signOut": "Sign Out",
     "loading": "Loading...",
     "submitting": "Submitting...",
@@ -16,21 +20,26 @@
   "auth": {
     "login": {
       "title": "Sign In",
-      "subtitle": "Welcome back. Continue with Google to access your barter dashboard.",
+      "subtitle": "Welcome back. Sign in with Google or your email to access your barter dashboard.",
+      "signInButton": "Sign In with Email",
       "noAccount": "Don't have an account?",
-      "createAccount": "Create an account"
+      "createAccount": "Create an account",
+      "invalidCredentials": "The email or password you entered is incorrect. Please try again."
     },
     "signup": {
       "title": "Create Your Account",
       "subtitle": "Start trading your professional services with local businesses and freelancers.",
+      "signUpButton": "Create Account with Email",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
-      "consentNotice": "By clicking \"Continue with Google\", you agree to our Terms of Service and acknowledge our Privacy Policy."
+      "consentNotice": "By creating an account, you agree to our Terms of Service and acknowledge our Privacy Policy.",
+      "emailConfirmationSent": "Verification email sent. Please check your inbox to confirm your account and sign in.",
+      "alreadyRegistered": "An account with this email already exists. Please sign in instead."
     },
     "error": {
       "title": "Authentication Notice",
       "defaultMessage": "We were unable to complete the sign-in request. Please try again.",
-      "accessDenied": "Google authentication was cancelled. Please try again when you are ready.",
+      "accessDenied": "Authentication was cancelled. Please try again when you are ready.",
       "expiredCode": "The authentication session expired. Please sign in again.",
       "backToLogin": "Return to Sign In"
     }
@@ -72,7 +81,7 @@
     "AUTH_REQUIRED": "Authentication is required to view this page.",
     "FORBIDDEN": "You are not authorized to perform this operation.",
     "VALIDATION_FAILED": "Please check your entries and try again.",
-    "OAUTH_FAILED": "Unable to connect with Google OAuth. Please try again.",
+    "OAUTH_FAILED": "Unable to connect with authentication provider. Please try again.",
     "INTERNAL_ERROR": "A temporary service error occurred. Please try again shortly."
   }
 }
