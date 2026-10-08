@@ -64,44 +64,68 @@ export async function submitOnboardingAction(
   const validData = validation.data;
   const now = new Date().toISOString();
 
-  // 4. Update Profile in database with RLS enforced ownership
+  // 4. Upsert Profile in database with RLS enforced ownership
+  const profilePayload = {
+    id: user.id,
+    display_name: validData.displayName,
+    account_type: validData.accountType,
+    business_name: validData.businessName || null,
+    country_code: validData.countryCode,
+    city_id: validData.cityId,
+    area_id: validData.areaId,
+    remote_delivery: validData.remoteDelivery,
+    terms_accepted_at: now,
+    terms_version: validData.termsVersion,
+    onboarding_completed_at: now,
+    updated_at: now,
+  };
+
   const { error: updateError } = await supabase
     .from('profiles')
-    .update({
-      display_name: validData.displayName,
-      account_type: validData.accountType,
-      business_name: validData.businessName || null,
-      country_code: validData.countryCode,
-      city_id: validData.cityId,
-      area_id: validData.areaId,
-      remote_delivery: validData.remoteDelivery,
-      terms_accepted_at: now,
-      terms_version: validData.termsVersion,
-      onboarding_completed_at: now,
-      updated_at: now,
-    })
-    .eq('id', user.id);
+    .upsert(profilePayload, { onConflict: 'id' });
 
   if (updateError) {
+    // If the profiles table does not exist yet in Supabase (unapplied migrations)
+    if (
+      updateError.code === 'PGRST205' ||
+      updateError.message.toLowerCase().includes('schema cache') ||
+      updateError.message.toLowerCase().includes('profiles')
+    ) {
+      logger.error(
+        { userId: user.id, error: updateError.message, event: 'onboarding.schema_missing' },
+        'Supabase profiles table does not exist in schema cache. Migrations have not been applied.'
+      );
+      return {
+        error:
+          'Database tables have not been created yet in Supabase. Please run supabase/complete_schema.sql in your Supabase SQL Editor.',
+      };
+    }
+
     // If the database has not yet been seeded with the locations table, retry without location FKs
-    if (updateError.message.toLowerCase().includes('foreign key') || updateError.message.toLowerCase().includes('fkey')) {
+    if (
+      updateError.message.toLowerCase().includes('foreign key') ||
+      updateError.message.toLowerCase().includes('fkey')
+    ) {
       logger.warn(
         { userId: user.id, error: updateError.message },
-        'Location FK missing in database. Retrying profile update without location FKs.'
+        'Location FK missing in database. Retrying profile upsert without location FKs.'
       );
       const { error: retryError } = await supabase
         .from('profiles')
-        .update({
-          display_name: validData.displayName,
-          account_type: validData.accountType,
-          business_name: validData.businessName || null,
-          remote_delivery: validData.remoteDelivery,
-          terms_accepted_at: now,
-          terms_version: validData.termsVersion,
-          onboarding_completed_at: now,
-          updated_at: now,
-        })
-        .eq('id', user.id);
+        .upsert(
+          {
+            id: user.id,
+            display_name: validData.displayName,
+            account_type: validData.accountType,
+            business_name: validData.businessName || null,
+            remote_delivery: validData.remoteDelivery,
+            terms_accepted_at: now,
+            terms_version: validData.termsVersion,
+            onboarding_completed_at: now,
+            updated_at: now,
+          },
+          { onConflict: 'id' }
+        );
 
       if (retryError) {
         logger.error(

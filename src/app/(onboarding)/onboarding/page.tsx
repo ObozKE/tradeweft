@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { requirePendingOnboardingUser } from '@/server/dal';
-import { getActiveCountries, getLocationsByCountry } from '@/features/onboarding';
+import { getActiveCountries, getLocationsByCountry } from '@/features/onboarding/queries/locations.queries';
 import { OnboardingForm } from '@/features/onboarding/components/OnboardingForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 

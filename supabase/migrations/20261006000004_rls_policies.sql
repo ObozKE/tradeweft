@@ -37,8 +37,12 @@ create policy "Users can update own profile"
     using (id = (select auth.uid()))
     with check (id = (select auth.uid()));
 
--- Note: No INSERT policy for profiles. Inserts are strictly performed
--- by the SECURITY DEFINER trigger `handle_new_user` on auth.users.
+-- Users can insert their own profile (for fallback or pre-trigger users)
+create policy "Users can insert own profile"
+    on public.profiles
+    for insert
+    to authenticated
+    with check (id = (select auth.uid()));
 
 -- 4. User Roles:
 -- Users can only view their own roles
