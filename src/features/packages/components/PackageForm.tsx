@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useActionState, useState, useMemo } from 'react';
+import React, { useActionState, useState, useMemo, useEffect } from 'react';
 import { saveServicePackageAction } from '../actions/package.actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { ErrorAlert } from '@/components/shared/ErrorAlert';
 import { DeliverablesEditor } from './DeliverablesEditor';
 import { LivePackagePreview } from './LivePackagePreview';
 import { FALLBACK_LOCATIONS, type Location } from '@/features/onboarding/data/locations.constants';
-import type { CategoryItem } from '../queries/package.queries';
+import { FALLBACK_CATEGORIES, type CategoryItem } from '../data/categories.constants';
 import { Loader2, Save, Eye, Edit3 } from 'lucide-react';
 
 interface PackageFormProps {
@@ -34,7 +34,7 @@ interface PackageFormProps {
     status?: string;
     updated_at?: string;
   };
-  categories: CategoryItem[];
+  categories?: CategoryItem[];
   providerName?: string;
 }
 
@@ -50,11 +50,18 @@ export function PackageForm({
 
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
+  // Resilient category taxonomy fallback ensures dropdown options always render
+  const effectiveCategories = useMemo(() => {
+    return categories && categories.length > 0 ? categories : FALLBACK_CATEGORIES;
+  }, [categories]);
+
   // Form State for Live Preview Sync
   const [title, setTitle] = useState(initialPackage?.title || '');
   const [summary, setSummary] = useState(initialPackage?.summary || '');
   const [description, setDescription] = useState(initialPackage?.description || '');
-  const [categoryId, setCategoryId] = useState(initialPackage?.category_id || categories[0]?.id || '');
+  const [categoryId, setCategoryId] = useState(
+    initialPackage?.category_id || effectiveCategories[0]?.id || ''
+  );
   const [deliveryMode, setDeliveryMode] = useState<'in_person' | 'remote' | 'hybrid'>(
     initialPackage?.delivery_mode || 'remote'
   );
@@ -69,6 +76,16 @@ export function PackageForm({
     initialPackage?.seekingCategoryIds || []
   );
 
+  // Synchronize categoryId if effectiveCategories load or initial value is missing
+  useEffect(() => {
+    if (
+      effectiveCategories.length > 0 &&
+      (!categoryId || !effectiveCategories.some((c) => c.id === categoryId))
+    ) {
+      setCategoryId(effectiveCategories[0].id);
+    }
+  }, [effectiveCategories, categoryId]);
+
   // Filter locations for Kenya
   const cities = useMemo(() => {
     return FALLBACK_LOCATIONS.filter((l) => l.country_code === 'KE' && l.level === 'city');
@@ -81,8 +98,8 @@ export function PackageForm({
   }, [cityId]);
 
   const selectedCategoryName = useMemo(() => {
-    return categories.find((c) => c.id === categoryId)?.name || 'Service Category';
-  }, [categories, categoryId]);
+    return effectiveCategories.find((c) => c.id === categoryId)?.name || 'Service Category';
+  }, [effectiveCategories, categoryId]);
 
   const selectedCityName = useMemo(() => {
     return cities.find((c) => c.id === cityId)?.name || 'Nairobi';
@@ -94,9 +111,9 @@ export function PackageForm({
 
   const seekingCategoryNames = useMemo(() => {
     return seekingCategoryIds
-      .map((id) => categories.find((c) => c.id === id)?.name)
+      .map((id) => effectiveCategories.find((c) => c.id === id)?.name)
       .filter(Boolean) as string[];
-  }, [categories, seekingCategoryIds]);
+  }, [effectiveCategories, seekingCategoryIds]);
 
   const toggleSeekingCategory = (id: string) => {
     if (seekingCategoryIds.includes(id)) {
@@ -208,12 +225,19 @@ export function PackageForm({
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               error={!!state?.fieldErrors?.categoryId}
+              required
             >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id} className="text-ink bg-white">
-                  {cat.parentId ? `↳ ${cat.name}` : cat.name}
+              {effectiveCategories.length === 0 ? (
+                <option value="" disabled className="text-text-muted bg-white">
+                  Loading categories...
                 </option>
-              ))}
+              ) : (
+                effectiveCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id} className="text-ink bg-white">
+                    {cat.parentId ? `\u00A0\u00A0\u00A0\u00A0↳ ${cat.name}` : cat.name}
+                  </option>
+                ))
+              )}
             </Select>
             {state?.fieldErrors?.categoryId && (
               <p className="text-xs text-amber-800 font-medium">{state.fieldErrors.categoryId[0]}</p>
@@ -425,24 +449,26 @@ export function PackageForm({
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2">
-              {categories.slice(0, 15).map((cat) => {
-                const isSelected = seekingCategoryIds.includes(cat.id);
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => toggleSeekingCategory(cat.id)}
-                    className={`rounded-chip border px-3 py-1 text-xs font-medium transition cursor-pointer ${
-                      isSelected
-                        ? 'border-primary bg-pine-100 text-pine-800'
-                        : 'border-border bg-surface-sunken/60 text-ink hover:bg-surface-sunken'
-                    }`}
-                  >
-                    {isSelected ? '✓ ' : '+ '}
-                    {cat.name}
-                  </button>
-                );
-              })}
+              {effectiveCategories
+                .filter((cat) => cat.parentId === null)
+                .map((cat) => {
+                  const isSelected = seekingCategoryIds.includes(cat.id);
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => toggleSeekingCategory(cat.id)}
+                      className={`rounded-chip border px-3 py-1 text-xs font-medium transition cursor-pointer ${
+                        isSelected
+                          ? 'border-primary bg-pine-100 text-pine-800'
+                          : 'border-border bg-surface-sunken/60 text-ink hover:bg-surface-sunken'
+                      }`}
+                    >
+                      {isSelected ? '✓ ' : '+ '}
+                      {cat.name}
+                    </button>
+                  );
+                })}
             </div>
 
             {seekingCategoryIds.map((id) => (

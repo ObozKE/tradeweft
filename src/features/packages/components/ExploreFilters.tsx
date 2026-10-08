@@ -1,22 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { FALLBACK_LOCATIONS } from '@/features/onboarding/data/locations.constants';
+import { FALLBACK_CATEGORIES } from '../data/categories.constants';
 import type { CategoryItem } from '../queries/package.queries';
 import { Filter, X, Search, RotateCcw } from 'lucide-react';
 
 interface ExploreFiltersProps {
-  categories: CategoryItem[];
+  categories?: CategoryItem[];
 }
 
-export function ExploreFilters({ categories }: ExploreFiltersProps) {
+export function ExploreFilters({ categories = [] }: ExploreFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const effectiveCategories = useMemo(() => {
+    return categories && categories.length > 0 ? categories : FALLBACK_CATEGORIES;
+  }, [categories]);
 
   const [isOpenMobile, setIsOpenMobile] = useState(false);
 
@@ -123,9 +128,9 @@ export function ExploreFilters({ categories }: ExploreFiltersProps) {
           className="h-10 text-xs"
         >
           <option value="">All Categories</option>
-          {categories.map((c) => (
+          {effectiveCategories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.parentId ? `↳ ${c.name}` : c.name}
+              {c.parentId ? `\u00A0\u00A0\u00A0\u00A0↳ ${c.name}` : c.name}
             </option>
           ))}
         </Select>
@@ -143,9 +148,9 @@ export function ExploreFilters({ categories }: ExploreFiltersProps) {
           className="h-10 text-xs"
         >
           <option value="">Any Wants (Open Trade)</option>
-          {categories.map((c) => (
+          {effectiveCategories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.parentId ? `↳ ${c.name}` : c.name}
+              {c.parentId ? `\u00A0\u00A0\u00A0\u00A0↳ ${c.name}` : c.name}
             </option>
           ))}
         </Select>

@@ -1,14 +1,14 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
 import { FALLBACK_LOCATIONS, type Location } from '@/features/onboarding/data/locations.constants';
+import {
+  getFallbackCategories,
+  FALLBACK_CATEGORIES,
+  type CategoryItem,
+} from '../data/categories.constants';
 
-export interface CategoryItem {
-  id: string;
-  parentId: string | null;
-  slug: string;
-  name: string;
-  sortOrder: number;
-}
+export type { CategoryItem };
+export { FALLBACK_CATEGORIES };
 
 export interface PackageListItem {
   id: string;
@@ -29,41 +29,69 @@ export interface PackageListItem {
 
 /**
  * Fetches the active category hierarchy with localized names.
+ * Falls back to canonical categories if the database is unmigrated or empty.
  */
 export async function getCategories(locale: string = 'en'): Promise<CategoryItem[]> {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from('service_categories')
-    .select(`
-      id,
-      parent_id,
-      slug,
-      sort_order,
-      is_active,
-      service_category_translations (
-        locale,
-        name
-      )
-    `)
-    .eq('is_active', true)
-    .order('sort_order', { ascending: true });
+    const { data, error } = await supabase
+      .from('service_categories')
+      .select(`
+        id,
+        parent_id,
+        slug,
+        sort_order,
+        is_active,
+        service_category_translations (
+          locale,
+          name
+        )
+      `)
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
 
-  if (error || !data) {
-    return [];
+    if (error || !data || data.length === 0) {
+      return getFallbackCategories(locale);
+    }
+
+    const items: CategoryItem[] = (data as any[]).map((cat) => {
+      const translations =
+        (cat.service_category_translations as Array<{ locale: string; name: string }>) || [];
+      const translation = translations.find((t) => t.locale === locale) || translations[0];
+      return {
+        id: cat.id,
+        parentId: cat.parent_id,
+        slug: cat.slug,
+        name: translation?.name || cat.slug,
+        sortOrder: cat.sort_order,
+      };
+    });
+
+    // Structure hierarchically: parents followed immediately by their children
+    const roots = items.filter((c) => !c.parentId).sort((a, b) => a.sortOrder - b.sortOrder);
+    const sorted: CategoryItem[] = [];
+
+    for (const root of roots) {
+      sorted.push(root);
+      const children = items
+        .filter((c) => c.parentId === root.id)
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+      sorted.push(...children);
+    }
+
+    // Append any orphaned items if present
+    const rootsAndChildrenIds = new Set(sorted.map((s) => s.id));
+    for (const item of items) {
+      if (!rootsAndChildrenIds.has(item.id)) {
+        sorted.push(item);
+      }
+    }
+
+    return sorted;
+  } catch {
+    return getFallbackCategories(locale);
   }
-
-  return (data as any[]).map((cat) => {
-    const translations = (cat.service_category_translations as Array<{ locale: string; name: string }>) || [];
-    const translation = translations.find((t) => t.locale === locale) || translations[0];
-    return {
-      id: cat.id,
-      parentId: cat.parent_id,
-      slug: cat.slug,
-      name: translation?.name || cat.slug,
-      sortOrder: cat.sort_order,
-    };
-  });
 }
 
 /**

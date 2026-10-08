@@ -130,6 +130,15 @@ export async function saveServicePackageAction(
 
     if (updateError) {
       logger.error({ userId: user.id, error: updateError.message, event: 'package.update_failed' });
+      if (
+        updateError.message.includes('does not exist') ||
+        updateError.message.includes('schema cache')
+      ) {
+        return {
+          error:
+            'Database schema is initializing. Please ensure complete_schema.sql has been executed in your Supabase SQL Editor.',
+        };
+      }
       return { error: 'A database error occurred while updating the package.' };
     }
 
@@ -160,6 +169,15 @@ export async function saveServicePackageAction(
 
     if (insertError || !inserted) {
       logger.error({ userId: user.id, error: insertError?.message, event: 'package.create_failed' });
+      if (
+        insertError?.message?.includes('does not exist') ||
+        insertError?.message?.includes('schema cache')
+      ) {
+        return {
+          error:
+            'Database schema is initializing. Please ensure complete_schema.sql has been executed in your Supabase SQL Editor.',
+        };
+      }
       return { error: 'Failed to create service package. Please try again.' };
     }
 
