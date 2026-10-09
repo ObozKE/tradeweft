@@ -2,12 +2,16 @@ import React from 'react';
 import Link from 'next/link';
 import { requireOnboardedUser } from '@/server/dal';
 import { getCategories } from '@/features/packages/queries/package.queries';
+import { getLocationsByCountry } from '@/features/onboarding/queries/locations.queries';
 import { PackageForm } from '@/features/packages/components/PackageForm';
 import { ArrowLeft } from 'lucide-react';
 
 export default async function NewServicePackagePage() {
   const { user, profile } = await requireOnboardedUser();
-  const categories = await getCategories('en');
+  const [categories, locations] = await Promise.all([
+    getCategories('en'),
+    getLocationsByCountry(profile?.country_code || 'KE'),
+  ]);
 
   const providerName =
     profile?.business_name || profile?.display_name || user.email?.split('@')[0] || 'Provider';
@@ -33,7 +37,15 @@ export default async function NewServicePackagePage() {
       </div>
 
       <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
-        <PackageForm categories={categories} providerName={providerName} />
+        <PackageForm
+          categories={categories}
+          locations={locations}
+          initialPackage={{
+            city_id: profile?.city_id,
+            area_id: profile?.area_id,
+          }}
+          providerName={providerName}
+        />
       </div>
     </div>
   );

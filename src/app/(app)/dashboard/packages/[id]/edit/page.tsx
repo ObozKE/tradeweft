@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireOnboardedUser } from '@/server/dal';
 import { getPackageForEdit, getCategories } from '@/features/packages/queries/package.queries';
+import { getLocationsByCountry } from '@/features/onboarding/queries/locations.queries';
 import { PackageForm } from '@/features/packages/components/PackageForm';
 import { ArrowLeft } from 'lucide-react';
 
@@ -19,7 +20,10 @@ export default async function EditServicePackagePage({ params }: EditPackagePage
     notFound();
   }
 
-  const categories = await getCategories('en');
+  const [categories, locations] = await Promise.all([
+    getCategories('en'),
+    getLocationsByCountry(pkg.country_code || 'KE'),
+  ]);
   const providerName =
     profile?.business_name || profile?.display_name || user.email?.split('@')[0] || 'Provider';
 
@@ -66,6 +70,7 @@ export default async function EditServicePackagePage({ params }: EditPackagePage
             updated_at: pkg.updated_at,
           }}
           categories={categories}
+          locations={locations}
           providerName={providerName}
         />
       </div>

@@ -35,12 +35,14 @@ interface PackageFormProps {
     updated_at?: string;
   };
   categories?: CategoryItem[];
+  locations?: Location[];
   providerName?: string;
 }
 
 export function PackageForm({
   initialPackage,
   categories = [],
+  locations = [],
   providerName = 'Your Business Profile',
 }: PackageFormProps) {
   const [state, formAction, isPending] = useActionState(
@@ -55,6 +57,16 @@ export function PackageForm({
     return categories && categories.length > 0 ? categories : FALLBACK_CATEGORIES;
   }, [categories]);
 
+  // Resilient location fallback ensures cities and neighborhoods are always populated
+  const effectiveLocations = useMemo(() => {
+    return locations && locations.length > 0 ? locations : FALLBACK_LOCATIONS;
+  }, [locations]);
+
+  // Filter locations for Kenya
+  const cities = useMemo(() => {
+    return effectiveLocations.filter((l) => l.country_code === 'KE' && l.level === 'city');
+  }, [effectiveLocations]);
+
   // Form State for Live Preview Sync
   const [title, setTitle] = useState(initialPackage?.title || '');
   const [summary, setSummary] = useState(initialPackage?.summary || '');
@@ -65,7 +77,9 @@ export function PackageForm({
   const [deliveryMode, setDeliveryMode] = useState<'in_person' | 'remote' | 'hybrid'>(
     initialPackage?.delivery_mode || 'remote'
   );
-  const [cityId, setCityId] = useState(initialPackage?.city_id || '99990000-0000-0000-0000-000000000002');
+  const [cityId, setCityId] = useState(
+    initialPackage?.city_id || cities[0]?.id || 'b0000000-0000-0000-0000-000000000001'
+  );
   const [areaId, setAreaId] = useState(initialPackage?.area_id || '');
   const [turnaroundDays, setTurnaroundDays] = useState(initialPackage?.turnaround_days || 7);
   const [indicativeValueMinor, setIndicativeValueMinor] = useState<number | null>(
@@ -86,16 +100,34 @@ export function PackageForm({
     }
   }, [effectiveCategories, categoryId]);
 
-  // Filter locations for Kenya
-  const cities = useMemo(() => {
-    return FALLBACK_LOCATIONS.filter((l) => l.country_code === 'KE' && l.level === 'city');
-  }, []);
+  // Synchronize cityId if cities array changes or initial value is missing
+  useEffect(() => {
+    if (cities.length > 0 && (!cityId || !cities.some((c) => c.id === cityId))) {
+      setCityId(cities[0].id);
+    }
+  }, [cities, cityId]);
 
+  // Areas filtered by selected cityId
   const areas = useMemo(() => {
-    return FALLBACK_LOCATIONS.filter(
+    return effectiveLocations.filter(
       (l) => l.country_code === 'KE' && l.level === 'area' && (!cityId || l.parent_id === cityId)
     );
-  }, [cityId]);
+  }, [effectiveLocations, cityId]);
+
+  // Synchronize areaId when areas array changes
+  useEffect(() => {
+    if (areas.length > 0) {
+      if (areaId && !areas.some((a) => a.id === areaId)) {
+        setAreaId('');
+      }
+    }
+  }, [areas, areaId]);
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCityId = e.target.value;
+    setCityId(newCityId);
+    setAreaId('');
+  };
 
   const selectedCategoryName = useMemo(() => {
     return effectiveCategories.find((c) => c.id === categoryId)?.name || 'Service Category';
@@ -332,8 +364,9 @@ export function PackageForm({
                   id="cityId"
                   name="cityId"
                   value={cityId}
-                  onChange={(e) => setCityId(e.target.value)}
+                  onChange={handleCityChange}
                   error={!!state?.fieldErrors?.cityId}
+                  required
                 >
                   {cities.map((c) => (
                     <option key={c.id} value={c.id} className="text-ink bg-white">
@@ -359,15 +392,22 @@ export function PackageForm({
                   value={areaId}
                   onChange={(e) => setAreaId(e.target.value)}
                   error={!!state?.fieldErrors?.areaId}
+                  required={deliveryMode === 'in_person' || deliveryMode === 'hybrid'}
                 >
                   <option value="" className="text-text-muted bg-white">
                     {deliveryMode === 'remote' ? 'City-wide (Optional)' : 'Select Neighborhood'}
                   </option>
-                  {areas.map((a) => (
-                    <option key={a.id} value={a.id} className="text-ink bg-white">
-                      {a.name}
+                  {areas.length === 0 ? (
+                    <option value="" disabled className="text-text-muted bg-white">
+                      No neighborhoods available
                     </option>
-                  ))}
+                  ) : (
+                    areas.map((a) => (
+                      <option key={a.id} value={a.id} className="text-ink bg-white">
+                        {a.name}
+                      </option>
+                    ))
+                  )}
                 </Select>
                 {state?.fieldErrors?.areaId && (
                   <p className="text-xs text-amber-800 font-medium">{state.fieldErrors.areaId[0]}</p>
