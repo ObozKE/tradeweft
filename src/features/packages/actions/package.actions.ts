@@ -218,7 +218,7 @@ export async function saveServicePackageAction(
 
   revalidatePath('/dashboard/packages');
   if (packageId) {
-    revalidateTag(`package:${packageId}`, 'max-age=0');
+    revalidateTag(`package:${packageId}`, 'max');
   }
 
   redirect('/dashboard/packages');
@@ -269,7 +269,7 @@ export async function publishServicePackageAction(packageId: string): Promise<Pa
 
   revalidatePath('/dashboard/packages');
   revalidatePath('/explore');
-  revalidateTag(`package:${packageId}`, 'max-age=0');
+  revalidateTag(`package:${packageId}`, 'max');
 
   return { success: true, packageId };
 }
@@ -311,7 +311,7 @@ export async function setPackageStatusAction(
 
   revalidatePath('/dashboard/packages');
   revalidatePath('/explore');
-  revalidateTag(`package:${packageId}`, 'max-age=0');
+  revalidateTag(`package:${packageId}`, 'max');
 
   return { success: true, packageId };
 }
