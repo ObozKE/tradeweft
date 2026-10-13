@@ -279,7 +279,7 @@ returns table (
 language plpgsql
 stable
 security definer
-set search_path = ''
+set search_path = public, extensions
 as $$
 declare
     v_limit integer := least(coalesce(p_page_size, 20), 50);
