@@ -178,6 +178,11 @@ export async function saveServicePackageAction(
             'Database schema is initializing. Please ensure complete_schema.sql has been executed in your Supabase SQL Editor.',
         };
       }
+      if (insertError?.message?.includes('service_packages_category_id_fkey')) {
+        return {
+          error: 'The selected category is invalid or missing from the database. Please select a valid category.',
+        };
+      }
       return { error: 'Failed to create service package. Please try again.' };
     }
 
@@ -199,7 +204,15 @@ export async function saveServicePackageAction(
         package_id: packageId,
         category_id: catId,
       }));
-      await supabase.from('service_package_seeking_categories').insert(seekingRows);
+      const { error: seekingError } = await supabase.from('service_package_seeking_categories').insert(seekingRows);
+      if (seekingError) {
+        logger.warn({
+          userId: user.id,
+          packageId,
+          error: seekingError.message,
+          event: 'package.seeking_categories_failed',
+        });
+      }
     }
   }
 
