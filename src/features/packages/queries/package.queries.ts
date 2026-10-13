@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 import { FALLBACK_LOCATIONS, type Location } from '@/features/onboarding/data/locations.constants';
 import {
   getFallbackCategories,
@@ -116,7 +117,9 @@ export async function getProviderPackages(providerId: string): Promise<PackageLi
       category_id,
       city_id,
       area_id,
-      service_categories (
+      city:locations!service_packages_city_id_fkey(name),
+      area:locations!service_packages_area_id_fkey(name),
+      service_categories!service_packages_category_id_fkey (
         slug,
         service_category_translations (
           locale,
@@ -128,7 +131,12 @@ export async function getProviderPackages(providerId: string): Promise<PackageLi
     .eq('provider_id', providerId)
     .order('updated_at', { ascending: false });
 
-  if (error || !data) {
+  if (error) {
+    logger.error({ error: error.message, providerId, event: 'packages.provider_fetch_failed' });
+    return [];
+  }
+
+  if (!data) {
     return [];
   }
 
@@ -140,8 +148,8 @@ export async function getProviderPackages(providerId: string): Promise<PackageLi
       ? Math.max(...versions.map((v: any) => v.version_number))
       : null;
 
-    const city = FALLBACK_LOCATIONS.find((l) => l.id === pkg.city_id);
-    const area = FALLBACK_LOCATIONS.find((l) => l.id === pkg.area_id);
+    const cityName = pkg.city?.name || FALLBACK_LOCATIONS.find((l) => l.id === pkg.city_id)?.name || null;
+    const areaName = pkg.area?.name || FALLBACK_LOCATIONS.find((l) => l.id === pkg.area_id)?.name || null;
 
     return {
       id: pkg.id,
@@ -150,8 +158,8 @@ export async function getProviderPackages(providerId: string): Promise<PackageLi
       status: pkg.status,
       categoryName,
       deliveryMode: pkg.delivery_mode,
-      cityName: city?.name || null,
-      areaName: area?.name || null,
+      cityName,
+      areaName,
       turnaroundDays: pkg.turnaround_days,
       indicativeValueMinor: pkg.indicative_value_minor ? Number(pkg.indicative_value_minor) : null,
       currencyCode: pkg.currency_code,
@@ -213,6 +221,8 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
       country_code,
       city_id,
       area_id,
+      city:locations!service_packages_city_id_fkey(name),
+      area:locations!service_packages_area_id_fkey(name),
       turnaround_days,
       capacity_per_month,
       indicative_value_minor,
@@ -222,7 +232,7 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
       published_at,
       updated_at,
       provider_id,
-      service_categories (
+      service_categories!service_packages_category_id_fkey (
         id,
         slug,
         service_category_translations (locale, name)
@@ -233,6 +243,9 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
     .single();
 
   if (error || !pkg) {
+    if (error && error.code !== 'PGRST116') {
+      logger.error({ error: error.message, packageId, event: 'packages.detail_fetch_failed' });
+    }
     return null;
   }
 
@@ -271,8 +284,8 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
   const catTrans = rawPkg.service_categories?.service_category_translations?.find((t: any) => t.locale === locale)
     || rawPkg.service_categories?.service_category_translations?.[0];
 
-  const city = FALLBACK_LOCATIONS.find((l) => l.id === rawPkg.city_id);
-  const area = FALLBACK_LOCATIONS.find((l) => l.id === rawPkg.area_id);
+  const cityName = rawPkg.city?.name || FALLBACK_LOCATIONS.find((l) => l.id === rawPkg.city_id)?.name || null;
+  const areaName = rawPkg.area?.name || FALLBACK_LOCATIONS.find((l) => l.id === rawPkg.area_id)?.name || null;
 
   return {
     id: rawPkg.id,
@@ -283,9 +296,9 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
     deliveryMode: rawPkg.delivery_mode,
     countryCode: rawPkg.country_code,
     cityId: rawPkg.city_id,
-    cityName: city?.name || 'Nairobi',
+    cityName: cityName || 'Nairobi',
     areaId: rawPkg.area_id,
-    areaName: area?.name || null,
+    areaName,
     turnaroundDays: rawPkg.turnaround_days,
     capacityPerMonth: rawPkg.capacity_per_month,
     indicativeValueMinor: rawPkg.indicative_value_minor ? Number(rawPkg.indicative_value_minor) : null,
