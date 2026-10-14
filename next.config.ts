@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: process.env.ALLOWED_ORIGINS
-        ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+        ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim().replace(/^https?:\/\//, ''))
         : ['localhost:3000'],
     },
   },
@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://lh3.googleusercontent.com",
+              "img-src 'self' data: https://lh3.googleusercontent.com https://*.supabase.co https://*.supabase.in",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co http://127.0.0.1:54321 https://*.upstash.io",
               "frame-ancestors 'none'",

@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { Clock, MapPin, Globe, ArrowRight, User } from 'lucide-react';
+import { Clock, MapPin, Globe, ArrowRight, User, Sparkles } from 'lucide-react';
 import { formatIndicativeValue } from '../utils/currency';
 import type { SearchResultItem } from '../queries/search.queries';
+import { ReputationBadge } from '@/features/trust/components/ReputationBadge';
+import { generatePackageSlug } from '../utils/slug';
 
 interface PackageCardProps {
   pkg: SearchResultItem;
@@ -13,15 +15,24 @@ export function PackageCard({ pkg }: PackageCardProps) {
   const providerTitle = pkg.provider_business_name
     ? `${pkg.provider_display_name} (${pkg.provider_business_name})`
     : pkg.provider_display_name || 'Verified Provider';
+  const providerSlug = generatePackageSlug(pkg.provider_business_name || pkg.provider_display_name || 'provider');
 
   return (
-    <article className="flex flex-col justify-between rounded-lg border border-border bg-white p-5 shadow-xs transition hover:border-pine-300 hover:shadow-sm">
+    <article className={`flex flex-col justify-between rounded-lg border bg-white p-5 shadow-xs transition hover:shadow-sm ${pkg.is_promoted ? 'border-amber-300 ring-1 ring-amber-200/50' : 'border-border hover:border-pine-300'}`}>
       <div className="space-y-3">
         {/* Header Tag Bar */}
-        <div className="flex items-center justify-between text-xs">
-          <span className="rounded-chip bg-pine-200 px-2.5 py-0.5 font-semibold uppercase tracking-[0.04em] text-pine-800">
-            {pkg.category_name}
-          </span>
+        <div className="flex items-center justify-between text-xs gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="rounded-chip bg-pine-200 px-2.5 py-0.5 font-semibold uppercase tracking-[0.04em] text-pine-800">
+              {pkg.category_name}
+            </span>
+            {pkg.is_promoted && (
+              <span className="inline-flex items-center gap-1 rounded-chip bg-amber-50 border border-amber-300 px-2 py-0.5 font-semibold text-amber-950 text-[11px]" title="Promoted Top Ad placement">
+                <Sparkles className="h-3 w-3 text-amber-700" aria-hidden="true" />
+                <span>Promoted</span>
+              </span>
+            )}
+          </div>
 
           <span className="inline-flex items-center gap-1 text-text-secondary font-medium">
             {pkg.delivery_mode === 'remote' ? (
@@ -100,12 +111,25 @@ export function PackageCard({ pkg }: PackageCardProps) {
         </Link>
       </div>
 
-      {/* Provider Attribution */}
-      <div className="mt-2 pt-2 border-t border-border/60 flex items-center gap-2 text-xs text-text-muted">
-        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-sunken text-text-secondary">
-          <User className="h-3 w-3" />
-        </div>
-        <span className="truncate">{providerTitle}</span>
+      {/* Provider Attribution with Reputation Badge */}
+      <div className="mt-2 pt-2 border-t border-border/60 flex items-center justify-between gap-2 text-xs text-text-muted">
+        <Link
+          href={`/providers/${pkg.provider_id}/${providerSlug}`}
+          className="flex items-center gap-2 hover:text-pine-700 transition truncate min-w-0"
+        >
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-sunken text-text-secondary flex-shrink-0">
+            <User className="h-3 w-3" />
+          </div>
+          <span className="truncate">{providerTitle}</span>
+        </Link>
+
+        <ReputationBadge
+          tier={pkg.provider_reputation_tier}
+          score={pkg.provider_reliability_score}
+          isScoreVisible={pkg.provider_score_visible}
+          distinctPartnersCount={pkg.provider_distinct_partners}
+          size="sm"
+        />
       </div>
     </article>
   );

@@ -1,3 +1,8 @@
+import type {
+  PublishGateMode,
+  ProviderVerificationAggregateStatus,
+} from '@/lib/supabase/database.types';
+
 export interface PublishGateEvaluation {
   canPublish: boolean;
   reasons: string[];
@@ -15,13 +20,16 @@ export interface PublishGateInput {
   status?: string;
   activePackageCount?: number;
   maxActivePackages?: number;
+  publishGateMode?: PublishGateMode;
+  verificationStatus?: ProviderVerificationAggregateStatus | null;
+  hasPendingOrSubmittedLink?: boolean;
 }
 
 /**
  * Publish gate policy evaluating whether a service package is ready to be published.
  * Returns machine-readable codes for translated user feedback.
  * 
- * Phase 4 Extension Point: Identity / Business verification badges will check here.
+ * Evaluates per-country verification requirements ('none' | 'link_pending_or_verified' | 'verified').
  */
 export function canPublish(input: PublishGateInput): PublishGateEvaluation {
   const reasons: string[] = [];
@@ -68,6 +76,22 @@ export function canPublish(input: PublishGateInput): PublishGateEvaluation {
   } else if (input.deliveryMode === 'remote') {
     if (!input.cityId) {
       reasons.push('CITY_LOCATION_REQUIRED');
+    }
+  }
+
+  // 7. Per-country Portfolio Verification requirements
+  const gateMode = input.publishGateMode ?? 'none';
+  if (gateMode === 'verified') {
+    if (input.verificationStatus !== 'verified') {
+      reasons.push('VERIFICATION_REQUIRED');
+    }
+  } else if (gateMode === 'link_pending_or_verified') {
+    const hasProof =
+      input.verificationStatus === 'verified' ||
+      input.verificationStatus === 'pending' ||
+      input.hasPendingOrSubmittedLink === true;
+    if (!hasProof) {
+      reasons.push('PORTFOLIO_LINK_REQUIRED');
     }
   }
 

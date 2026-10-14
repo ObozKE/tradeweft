@@ -6,6 +6,9 @@ import { getPublicPackageDetail } from '@/features/packages/queries/package.quer
 import { generatePackageSlug } from '@/features/packages/utils/slug';
 import { formatIndicativeValue } from '@/features/packages/utils/currency';
 import { TradeActionSlot } from '@/features/packages/components/TradeActionSlot';
+import { ReputationBadge } from '@/features/trust/components/ReputationBadge';
+import { VerifiedBadgeSlot } from '@/features/trust/components/VerifiedBadgeSlot';
+import { AnalyticsBeacon } from '@/features/payments/components/AnalyticsBeacon';
 import {
   Clock,
   MapPin,
@@ -17,6 +20,7 @@ import {
   ShieldCheck,
   Calendar,
   Layers,
+  ExternalLink,
 } from 'lucide-react';
 
 interface PackageDetailPageProps {
@@ -100,6 +104,9 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd }}
       />
+
+      {/* Analytics View Beacon */}
+      <AnalyticsBeacon packageId={pkg.id} eventType="package_view" />
 
       {/* Back to Explore link */}
       <Link
@@ -247,10 +254,16 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pine-100 text-pine-800 font-bold">
                 {pkg.provider.displayName ? pkg.provider.displayName[0].toUpperCase() : 'P'}
               </div>
-              <div className="space-y-0.5">
-                <h4 className="text-base font-semibold text-ink leading-tight">
-                  {pkg.provider.displayName}
-                </h4>
+              <div className="space-y-0.5 min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h4 className="text-base font-semibold text-ink leading-tight">
+                    {pkg.provider.displayName}
+                  </h4>
+                  <VerifiedBadgeSlot
+                    status={pkg.provider.verificationStatus}
+                    linkCount={pkg.provider.verifiedLinkCount}
+                  />
+                </div>
                 {pkg.provider.businessName && (
                   <p className="text-xs text-text-secondary font-medium">
                     {pkg.provider.businessName}
@@ -259,25 +272,37 @@ export default async function PackageDetailPage({ params }: PackageDetailPagePro
               </div>
             </div>
 
+            {/* Phase 4 Reputation Badge */}
+            <div className="pt-1">
+              <ReputationBadge
+                tier={pkg.provider.reputationTier}
+                score={pkg.provider.reliabilityScore}
+                isScoreVisible={pkg.provider.isScoreVisible}
+                completedTradesCount={pkg.provider.completedTradesCount}
+                distinctPartnersCount={pkg.provider.distinctPartnersCount}
+                showDetails={true}
+                size="md"
+              />
+            </div>
+
             <div className="border-t border-border pt-3 space-y-2 text-xs text-text-secondary">
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-pine-600" />
-                <span>Verified Trade Member</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4 text-text-muted" />
-                <span>Member since {memberSinceYear}</span>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 text-text-muted" />
+                  <span>Member since {memberSinceYear}</span>
+                </span>
+                <Link
+                  href={`/providers/${pkg.provider.id}/${generatePackageSlug(pkg.provider.businessName || pkg.provider.displayName || 'provider')}`}
+                  className="font-semibold text-pine-600 hover:text-pine-700 flex items-center gap-1"
+                >
+                  View Profile <ExternalLink className="h-3 w-3" />
+                </Link>
               </div>
             </div>
 
-            {/* Phase 3 Trade Action Slot (Reserved) */}
+            {/* Phase 3 Trade Action Slot */}
             <div className="pt-2">
               <TradeActionSlot packageId={pkg.id} providerId={pkg.provider.id} />
-              <div className="rounded-button border border-border bg-surface-sunken p-3 text-center">
-                <p className="text-xs text-text-secondary">
-                  Barter trade proposals will activate in Phase 3.
-                </p>
-              </div>
             </div>
           </div>
         </div>

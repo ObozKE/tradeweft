@@ -148,3 +148,19 @@ export const serverActionLimiter = createRateLimiter('action', 30, 60);
 export const packageActionLimiter = createRateLimiter('package:action', 30, 60);
 export const publishLimiter = createRateLimiter('package:publish', 10, 60);
 export const exploreSearchLimiter = createRateLimiter('explore:search', 60, 60);
+export const tradeProposeLimiter = createRateLimiter('trade:propose', 10, 300);
+export const tradeActionLimiter = createRateLimiter('trade:action', 25, 60);
+export const contactRevealLimiter = createRateLimiter('trade:contact', 30, 60);
+export const reviewSubmitLimiter = createRateLimiter('review:submit', 10, 300);
+export const reviewActionLimiter = createRateLimiter('review:action', 20, 60);
+export const reviewReportLimiter = createRateLimiter('review:report', 5, 300);
+export const verificationLinkLimiter = createRateLimiter('verify:link', 10, 300);
+export const verificationDomainLimiter = createRateLimiter('verify:domain', 5, 300);
+export const mediaUploadLimiter = createRateLimiter('media:upload', 20, 300);
+export const adminReviewLimiter = createRateLimiter('admin:review', 60, 60);
+export const paymentInitiateLimiter = createRateLimiter('payment:initiate', 10, 600);
+export const paymentPhoneLimiter = createRateLimiter('payment:phone', 3, 600);
+export const paymentStatusLimiter = createRateLimiter('payment:status', 60, 60);
+export const financeActionLimiter = createRateLimiter('finance:action', 30, 60);
+
+

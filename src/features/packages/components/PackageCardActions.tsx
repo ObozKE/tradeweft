@@ -8,7 +8,7 @@ import {
   setPackageStatusAction,
   deleteDraftPackageAction,
 } from '../actions/package.actions';
-import { CheckCircle2, PauseCircle, Archive, Trash2, Edit3, Loader2, Play } from 'lucide-react';
+import { CheckCircle2, PauseCircle, Archive, Trash2, Edit3, Loader2, Play, Sparkles, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { ErrorAlert } from '@/components/shared/ErrorAlert';
 
@@ -128,6 +128,26 @@ export function PackageCardActions({ packageId, status }: PackageCardActionsProp
 
         {status === 'published' && (
           <>
+            <Link href={`/dashboard/promote/${packageId}`}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-8 text-amber-800 border-amber-300 hover:bg-amber-50"
+              >
+                <Sparkles className="me-1 h-3.5 w-3.5 text-amber-600" />
+                Promote
+              </Button>
+            </Link>
+            <Link href={`/dashboard/packages/${packageId}/analytics`}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-8 text-pine-800 border-pine-200 hover:bg-pine-50"
+              >
+                <BarChart3 className="me-1 h-3.5 w-3.5 text-pine-600" />
+                Analytics
+              </Button>
+            </Link>
             <Button
               type="button"
               variant="outline"

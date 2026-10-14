@@ -92,5 +92,80 @@ begin
     -- Re-index and analyze
     vacuum analyze public.service_packages;
 
-    raise notice 'Synthetic data generation complete. 1,000,000 packages ready for benchmark.';
+    raise notice 'Synthetic package data generation complete. 1,000,000 packages ready for benchmark.';
+end $$;
+
+-- ==============================================================================
+-- PHASE 3: SYNTHETIC BARTER AGREEMENTS & REVISIONS BENCHMARK (100,000 AGREEMENTS)
+-- ==============================================================================
+do $$
+declare
+    v_users uuid[];
+    v_user_count int;
+    v_agr_batch_size int := 20000;
+    v_agr_total int := 100000;
+    v_agr_batches int := v_agr_total / v_agr_batch_size;
+    b int;
+begin
+    -- Ensure at least 50 benchmark profiles exist for pair distribution
+    insert into auth.users (id, email)
+    select 
+        ('88880000-0000-0000-0000-' || lpad(i::text, 12, '0'))::uuid,
+        'benchmark_user_' || i || '@example.com'
+    from generate_series(1, 50) as s(i)
+    on conflict (id) do nothing;
+
+    insert into public.profiles (id, display_name, country_code, onboarding_completed_at)
+    select 
+        ('88880000-0000-0000-0000-' || lpad(i::text, 12, '0'))::uuid,
+        'Trader ' || i,
+        'KE',
+        now()
+    from generate_series(1, 50) as s(i)
+    on conflict (id) do nothing;
+
+    select array_agg(id) into v_users from public.profiles;
+    v_user_count := array_length(v_users, 1);
+
+    raise notice 'Starting insertion of % synthetic agreements across % profiles...', v_agr_total, v_user_count;
+
+    for b in 1..v_agr_batches loop
+        insert into public.agreements (
+            id,
+            country_code,
+            proposer_id,
+            recipient_id,
+            status,
+            current_revision_no,
+            turn_user_id,
+            expires_at,
+            trade_terms_version,
+            created_at,
+            updated_at
+        )
+        select
+            public.gen_uuidv7(),
+            'KE',
+            v_users[1 + mod(i, v_user_count)],
+            v_users[1 + mod(i + 1, v_user_count)],
+            case mod(i, 4)
+                when 0 then 'completed'::public.agreement_status
+                when 1 then 'active'::public.agreement_status
+                when 2 then 'declined'::public.agreement_status
+                else 'proposed'::public.agreement_status
+            end,
+            1,
+            v_users[1 + mod(i, v_user_count)],
+            now() + interval '7 days',
+            '2026-10-v1',
+            now() - (mod(i, 180) || ' days')::interval,
+            now() - (mod(i, 180) || ' days')::interval
+        from generate_series(((b - 1) * v_agr_batch_size) + 1, b * v_agr_batch_size) as s(i)
+        where v_users[1 + mod(i, v_user_count)] <> v_users[1 + mod(i + 1, v_user_count)];
+
+        raise notice 'Agreements Batch % of % completed...', b, v_agr_batches;
+    end loop;
+
+    vacuum analyze public.agreements;
+    raise notice 'Synthetic agreement benchmark population complete. 100,000 agreements indexed.';
 end $$;

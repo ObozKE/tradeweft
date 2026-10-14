@@ -43,16 +43,13 @@ create policy "Providers can insert own draft packages"
         and status = 'draft'
     );
 
--- UPDATE: Providers can update only their own packages (cannot directly set status to published via client)
+-- UPDATE: Providers can update only their own packages
 create policy "Providers can update own packages"
     on public.service_packages
     for update
     to authenticated
     using (provider_id = (select auth.uid()))
-    with check (
-        provider_id = (select auth.uid())
-        and (status <> 'published' or (select status from public.service_packages where id = service_packages.id) = 'published')
-    );
+    with check (provider_id = (select auth.uid()));
 
 -- DELETE: Providers can delete only their own draft packages
 create policy "Providers can delete own draft packages"

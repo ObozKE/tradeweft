@@ -1,5 +1,5 @@
 import 'server-only';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -62,3 +62,72 @@ export async function requirePendingOnboardingUser() {
 
   return { user, profile, supabase };
 }
+
+/**
+ * Requires an authenticated user with verifier or admin role.
+ * Emits a 404 notFound() for unauthorized users to prevent endpoint enumeration.
+ */
+export async function requireVerifierOrAdmin() {
+  const { user, supabase } = await requireUser();
+
+  const { data: roleRecords } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
+
+  const roles = (roleRecords || []).map((r) => r.role);
+  const isAuthorized = roles.includes('verifier') || roles.includes('admin');
+
+  if (!isAuthorized) {
+    notFound();
+  }
+
+  return { user, supabase, roles };
+}
+
+/**
+ * Requires an authenticated user with finance or admin role.
+ * Emits a 404 notFound() for unauthorized users to prevent endpoint enumeration.
+ */
+export async function requireFinanceOrAdmin() {
+  const { user, supabase } = await requireUser();
+
+  const { data: roleRecords } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
+
+  const roles = (roleRecords || []).map((r) => r.role);
+  const isAuthorized = roles.includes('finance') || roles.includes('admin');
+
+  if (!isAuthorized) {
+    notFound();
+  }
+
+  return { user, supabase, roles };
+}
+
+/**
+ * Requires an authenticated user with staff access (verifier, finance, or admin).
+ * Emits 404 notFound() for unauthorized users.
+ */
+export async function requireStaffUser() {
+  const { user, supabase } = await requireUser();
+
+  const { data: roleRecords } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
+
+  const roles = (roleRecords || []).map((r) => r.role);
+  const isAuthorized =
+    roles.includes('verifier') || roles.includes('finance') || roles.includes('admin');
+
+  if (!isAuthorized) {
+    notFound();
+  }
+
+  return { user, supabase, roles };
+}
+
+

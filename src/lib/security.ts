@@ -31,7 +31,7 @@ export function sanitizeRedirectUrl(nextUrl: string | null | undefined): string 
   }
 
   // Prevent backslash anywhere in the path (which browsers may normalize to forward slash)
-  if (trimmed.includes('\\')) {
+  if (trimmed.includes('\\') || trimmed.includes('..')) {
     return fallback;
   }
 

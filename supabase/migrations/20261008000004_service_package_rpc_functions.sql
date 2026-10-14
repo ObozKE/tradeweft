@@ -281,6 +281,7 @@ stable
 security definer
 set search_path = public, extensions
 as $$
+#variable_conflict use_column
 declare
     v_limit integer := least(coalesce(p_page_size, 20), 50);
     v_clean_query text := nullif(trim(p_query), '');
@@ -323,7 +324,7 @@ begin
                     from public.service_package_seeking_categories spsc
                     join public.service_categories scat on scat.id = spsc.category_id
                     left join public.service_category_translations sct 
-                        on sct.category_id = scat.id and sct.locale = p_locale
+                    on sct.category_id = scat.id and sct.locale = p_locale
                     where spsc.package_id = sp.id
                 ),
                 '[]'::jsonb
@@ -353,7 +354,7 @@ begin
           and (
               p_category_id is null
               or sp.category_id = p_category_id
-              or sp.category_id in (select id from public.service_categories where parent_id = p_category_id)
+              or sp.category_id in (select sub_cat.id from public.service_categories sub_cat where sub_cat.parent_id = p_category_id)
           )
           -- Seeking Category filtering (inclusive of child categories)
           and (
@@ -363,7 +364,7 @@ begin
                   where spsc.package_id = sp.id
                     and (
                         spsc.category_id = p_seeking_category_id
-                        or spsc.category_id in (select id from public.service_categories where parent_id = p_seeking_category_id)
+                        or spsc.category_id in (select sub_seek_cat.id from public.service_categories sub_seek_cat where sub_seek_cat.parent_id = p_seeking_category_id)
                     )
               )
           )

@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import { getCategories } from '@/features/packages/queries/package.queries';
 import { searchPackages } from '@/features/packages/queries/search.queries';
 import { packageSearchSchema } from '@/features/packages/schemas/search.schema';
@@ -22,6 +23,11 @@ interface ExplorePageProps {
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const resolvedParams = await searchParams;
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // Flatten and parse search query params safely
   const rawQuery = {
     country: typeof resolvedParams.country === 'string' ? resolvedParams.country : 'KE',
@@ -37,10 +43,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const validation = packageSearchSchema.safeParse(rawQuery);
   const validatedParams = validation.success ? validation.data : { country: 'KE' };
 
-  // Fetch categories and run keyset search query
-  const [categories, { items: packages, nextCursor, hasNextPage }] = await Promise.all([
+  // Fetch categories and run keyset search query (excluding own packages if authenticated)
+  const [categories, { items: packages, promotedItems, nextCursor, hasNextPage }] = await Promise.all([
     getCategories('en'),
-    searchPackages(validatedParams, 'en'),
+    searchPackages(validatedParams, 'en', user?.id),
   ]);
 
   return (
@@ -66,6 +72,29 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
         {/* Results Stream */}
         <div className="flex-1 w-full space-y-6">
+          {/* Promoted Placements Block (Top Ads) */}
+          {promotedItems && promotedItems.length > 0 && (
+            <section className="space-y-3 rounded-xl border border-amber-300 bg-amber-50/40 p-4 mb-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-amber-950">
+                  <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
+                  Promoted Placements
+                </span>
+                <Link
+                  href="/trust#ranking"
+                  className="text-[11px] text-text-secondary hover:text-ink underline"
+                >
+                  How Promoted Works
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {promotedItems.map((pkg) => (
+                  <PackageCard key={`promoted-${pkg.id}`} pkg={pkg} />
+                ))}
+              </div>
+            </section>
+          )}
+
           <div className="flex items-center justify-between text-xs text-text-secondary border-b border-border pb-3">
             <span>
               Showing <strong className="text-ink">{packages.length}</strong> available package{packages.length === 1 ? '' : 's'}
@@ -77,7 +106,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             )}
           </div>
 
-          {packages.length === 0 ? (
+          {packages.length === 0 && (!promotedItems || promotedItems.length === 0) ? (
             <div className="rounded-lg border border-border bg-white p-12 text-center shadow-xs">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pine-100 text-pine-700 mb-4">
                 <Search className="h-6 w-6" />

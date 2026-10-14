@@ -1,16 +1,22 @@
 import { z } from 'zod';
 
 export interface KeysetCursor {
-  publishedAt: string;
+  publishedAt?: string;
+  rankTs?: string;
   id: string;
   rank?: number;
 }
 
-const cursorSchema = z.object({
-  publishedAt: z.string().datetime(),
-  id: z.string().uuid(),
-  rank: z.number().optional(),
-});
+const cursorSchema = z
+  .object({
+    publishedAt: z.string().datetime().optional(),
+    rankTs: z.string().datetime().optional(),
+    id: z.string().uuid(),
+    rank: z.number().optional(),
+  })
+  .refine((data) => Boolean(data.publishedAt || data.rankTs), {
+    message: 'Must contain publishedAt or rankTs timestamp',
+  });
 
 /**
  * Encodes keyset cursor values into an opaque, URL-safe base64 string.

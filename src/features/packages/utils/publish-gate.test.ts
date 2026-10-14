@@ -77,4 +77,46 @@ describe('Publish Gate Policy', () => {
     expect(resultArchived.canPublish).toBe(false);
     expect(resultArchived.reasons).toContain('INVALID_STATUS');
   });
+
+  it('rejects when country requires full verification and provider is unverified', () => {
+    const result = canPublish({
+      ...validBasePackage,
+      publishGateMode: 'verified',
+      verificationStatus: 'none',
+    });
+    expect(result.canPublish).toBe(false);
+    expect(result.reasons).toContain('VERIFICATION_REQUIRED');
+
+    const resultVerified = canPublish({
+      ...validBasePackage,
+      publishGateMode: 'verified',
+      verificationStatus: 'verified',
+    });
+    expect(resultVerified.canPublish).toBe(true);
+  });
+
+  it('evaluates link_pending_or_verified country gate correctly', () => {
+    const noLinks = canPublish({
+      ...validBasePackage,
+      publishGateMode: 'link_pending_or_verified',
+      verificationStatus: 'none',
+      hasPendingOrSubmittedLink: false,
+    });
+    expect(noLinks.canPublish).toBe(false);
+    expect(noLinks.reasons).toContain('PORTFOLIO_LINK_REQUIRED');
+
+    const pendingLink = canPublish({
+      ...validBasePackage,
+      publishGateMode: 'link_pending_or_verified',
+      verificationStatus: 'pending',
+    });
+    expect(pendingLink.canPublish).toBe(true);
+
+    const verifiedLink = canPublish({
+      ...validBasePackage,
+      publishGateMode: 'link_pending_or_verified',
+      verificationStatus: 'verified',
+    });
+    expect(verifiedLink.canPublish).toBe(true);
+  });
 });

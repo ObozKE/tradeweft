@@ -98,5 +98,82 @@
     "publishedNotice": "Kifurushi kimechapishwa kwa mafanikio sokoni.",
     "pausedNotice": "Kifurushi kimesitishwa na hakionekani kwenye utafutaji.",
     "archivedNotice": "Kifurushi kimehifadhiwa."
+  },
+  "trades": {
+    "title": "Biashara za Kubadilishana",
+    "subtitle": "Jadiliana, simamia, na kamilisha ubadilishanaji wa huduma Nairobi.",
+    "needsResponse": "Inasubiri Jibu Lako",
+    "waitingOnThem": "Inasubiri Mwenzako",
+    "active": "Biashara Zinazoendelea",
+    "closed": "Biashara Zilizokamilika / Zilizofungwa",
+    "proposeTrade": "Pendekeza Biashara",
+    "acceptTrade": "Kubali Masharti",
+    "counterTrade": "Tuma Pendekezo Jipya",
+    "declineTrade": "Kataa Biashara",
+    "withdrawTrade": "Ondoa Pendekezo",
+    "markDelivered": "Weka Huduma Yangu Imekamilika",
+    "confirmReceipt": "Thibitisha Kupokea Huduma",
+    "requestCancellation": "Omba Kusitisha kwa Pamoja",
+    "openDispute": "Fungua Mzozo",
+    "tradeTermsNotice": "Ilani ya Masharti ya Biashara (v2026-10-v1): Trade Weft ni jukwaa la kuunganisha na si mshirika wa biashara, wala haitoi dhamana ya ukamilishaji. Pande zote zinakubali kutimiza huduma kwa nia njema.",
+    "aboutEven": "Iko sawa takriban",
+    "tiltedTowardThem": "Inamwelekea mwenzako",
+    "tiltedTowardYou": "Inakuelekea wewe",
+    "valueNotSet": "Thamani haijawekwa"
+  },
+  "matches": {
+    "title": "Ulinganifu wa Pamoja",
+    "subtitle": "Watoa huduma ambapo huduma zako zinalingana na wanachotafuta, na huduma zao zinalingana na unachotafuta.",
+    "matchStrength": "Makundi Yanayolingana",
+    "noMatches": "Bado hakuna ulinganifu wa pamoja. Jaribu kuchapisha vifurushi vyenye makundi mengi ya utafutaji."
+  },
+  "notifications": {
+    "title": "Taarifa",
+    "subtitle": "Taarifa za moja kwa moja kuhusu mapendekezo yako na biashara zinazoendelea.",
+    "markAllRead": "Weka zote zimesomwa",
+    "empty": "Bado hakuna taarifa."
+  },
+  "reviews": {
+    "title": "Tathmini na Sifa",
+    "subtitle": "Tathmini zisizoonekana hadi pande zote zikamilishe na leja ya uaminifu.",
+    "submit": "Tuma Tathmini",
+    "overallRating": "Kiwango cha Jumla",
+    "quality": "Ubora wa Kazi",
+    "communication": "Mawasiliano",
+    "timeliness": "Kuzingatia Muda",
+    "wouldTradeAgain": "Je, ungefanya biashara na mshirika huyu tena?",
+    "empty": "Bado hakuna tathmini."
+  },
+  "verification": {
+    "title": "Uthibitishaji wa Kazi na Wasifu",
+    "subtitle": "Unganisha akaunti za nje zilizothibitishwa na kazi zako zilizopita.",
+    "addLink": "Ongeza Kiungo cha Kazi",
+    "githubVerified": "GitHub Imethibitishwa",
+    "domainVerified": "Kikoa Kimethibitishwa",
+    "pendingReview": "Inasubiri Uhakiki wa Mwongozo",
+    "verified": "Imethibitishwa",
+    "rejected": "Imekataliwa"
+  },
+  "pricing": {
+    "title": "Bei Wazi na Nafuu",
+    "subtitle": "Biashara ya kubadilishana ni 100% bure. Vifurushi vinauzwa kwa kuonekana zaidi na takwimu.",
+    "freeForever": "Bure Milele",
+    "boostBasic": "Boost Basic",
+    "boostPro": "Boost Pro",
+    "boostEnterprise": "Boost Enterprise",
+    "monthly": "kwa siku 30"
+  },
+  "billing": {
+    "title": "Malipo na Usajili",
+    "subtitle": "Simamia vifurushi vyako vya Boost na malipo ya M-Pesa.",
+    "currentPlan": "Kifurushi Kilicho Hai",
+    "paymentHistory": "Historia ya Malipo",
+    "reconcileNotice": "Malipo yanathibitishwa moja kwa moja kupitia Safaricom M-Pesa."
+  },
+  "promotions": {
+    "title": "Matangazo Maalum (Top Ads)",
+    "subtitle": "Tangaza vifurushi vyako vya huduma vionekane juu kwenye utafutaji.",
+    "pinned": "Nafasi ya Juu",
+    "selectSlot": "Chagua Nafasi ya Tangazo"
   }
 }

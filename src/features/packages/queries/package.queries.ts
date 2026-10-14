@@ -254,9 +254,30 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
   // Fetch provider metadata via public_provider_profiles view
   const { data: providerProfile } = await supabase
     .from('public_provider_profiles')
-    .select('id, display_name, business_name, avatar_url, member_since')
+    .select(
+      'id, display_name, business_name, avatar_url, member_since, reliability_score, reputation_tier, completed_trades_count, distinct_partners_count, is_score_visible, verification_status, verified_link_count'
+    )
     .eq('id', rawPkg.provider_id)
     .single();
+
+  // Fetch package media (cover + gallery)
+  const { data: packageMedia } = await supabase
+    .from('package_media')
+    .select(`
+      asset_id,
+      is_cover,
+      position,
+      alt_text,
+      media_assets (
+        id,
+        bucket,
+        path,
+        blur_data_url,
+        variants
+      )
+    `)
+    .eq('package_id', packageId)
+    .order('position', { ascending: true });
 
   // Fetch seeking categories
   const { data: seekingData } = await supabase
@@ -313,12 +334,28 @@ export async function getPublicPackageDetail(packageId: string, locale: string =
       name: catTrans?.name || rawPkg.service_categories?.slug,
     },
     seekingCategories,
+    media: (packageMedia || []).map((pm: any) => ({
+      assetId: pm.asset_id,
+      isCover: pm.is_cover,
+      position: pm.position,
+      altText: pm.alt_text,
+      blurDataUrl: pm.media_assets?.blur_data_url || null,
+      path: pm.media_assets?.path || null,
+      variants: pm.media_assets?.variants || null,
+    })),
     provider: {
       id: providerProfile?.id || rawPkg.provider_id,
       displayName: providerProfile?.display_name || 'Verified Provider',
       businessName: providerProfile?.business_name || null,
       avatarUrl: providerProfile?.avatar_url || null,
       memberSince: providerProfile?.member_since || rawPkg.published_at,
+      reliabilityScore: providerProfile?.reliability_score ?? null,
+      reputationTier: providerProfile?.reputation_tier ?? 'new',
+      completedTradesCount: providerProfile?.completed_trades_count ?? 0,
+      distinctPartnersCount: providerProfile?.distinct_partners_count ?? 0,
+      isScoreVisible: providerProfile?.is_score_visible ?? false,
+      verificationStatus: providerProfile?.verification_status ?? 'none',
+      verifiedLinkCount: providerProfile?.verified_link_count ?? 0,
     },
   };
 }

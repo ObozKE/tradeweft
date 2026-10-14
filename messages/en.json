@@ -98,5 +98,82 @@
     "publishedNotice": "Package published successfully to public marketplace.",
     "pausedNotice": "Package paused. It is now hidden from search.",
     "archivedNotice": "Package archived."
+  },
+  "trades": {
+    "title": "Barter Trades",
+    "subtitle": "Negotiate, manage, and complete service exchanges in Nairobi.",
+    "needsResponse": "Needs Your Response",
+    "waitingOnThem": "Waiting on Them",
+    "active": "Active Trades",
+    "closed": "Closed / Past Trades",
+    "proposeTrade": "Propose a Trade",
+    "acceptTrade": "Accept Terms",
+    "counterTrade": "Send Counter-Offer",
+    "declineTrade": "Decline Trade",
+    "withdrawTrade": "Withdraw Proposal",
+    "markDelivered": "Mark My Services Delivered",
+    "confirmReceipt": "Confirm Receipt of Services",
+    "requestCancellation": "Request Mutual Cancellation",
+    "openDispute": "Open Dispute",
+    "tradeTermsNotice": "Trade Terms Notice (v2026-10-v1): Trade Weft is a matching platform and is not a party to trades, nor does it provide escrow or guarantee completion. Both parties agree to deliver services in good faith.",
+    "aboutEven": "About even",
+    "tiltedTowardThem": "Tilted toward them",
+    "tiltedTowardYou": "Tilted toward you",
+    "valueNotSet": "Value not set"
+  },
+  "matches": {
+    "title": "Mutual Matches",
+    "subtitle": "Providers where your services match what they seek, and their services match what you seek.",
+    "matchStrength": "Mutual Category Overlaps",
+    "noMatches": "No mutual matches found yet. Try publishing packages with more seeking categories."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Real-time updates on your proposals and active barter trades.",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet."
+  },
+  "reviews": {
+    "title": "Reviews & Reputation",
+    "subtitle": "Double-blind reviews and public trust ledger entries.",
+    "submit": "Submit Review",
+    "overallRating": "Overall Rating",
+    "quality": "Quality of Work",
+    "communication": "Communication",
+    "timeliness": "Timeliness",
+    "wouldTradeAgain": "Would you trade with this partner again?",
+    "empty": "No reviews yet."
+  },
+  "verification": {
+    "title": "Portfolio & Identity Verification",
+    "subtitle": "Connect verified external profiles and proof of work.",
+    "addLink": "Add Portfolio Link",
+    "githubVerified": "GitHub Verified",
+    "domainVerified": "Domain Verified",
+    "pendingReview": "Pending Manual Review",
+    "verified": "Verified",
+    "rejected": "Rejected"
+  },
+  "pricing": {
+    "title": "Transparent Pricing",
+    "subtitle": "Barter trading is 100% free. Paid plans offer visibility, capacity, and analytics.",
+    "freeForever": "Free Forever",
+    "boostBasic": "Boost Basic",
+    "boostPro": "Boost Pro",
+    "boostEnterprise": "Boost Enterprise",
+    "monthly": "per 30 days"
+  },
+  "billing": {
+    "title": "Billing & Subscriptions",
+    "subtitle": "Manage your Boost subscription plans and M-Pesa payments.",
+    "currentPlan": "Current Active Plan",
+    "paymentHistory": "Payment History",
+    "reconcileNotice": "Payments are automatically reconciled against Safaricom M-Pesa."
+  },
+  "promotions": {
+    "title": "Top Ad Placements",
+    "subtitle": "Promote your service packages to the top of search and browse.",
+    "pinned": "Pinned Placement",
+    "selectSlot": "Select Promoted Slot"
   }
 }

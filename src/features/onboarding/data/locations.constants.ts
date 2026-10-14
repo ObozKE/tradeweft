@@ -12,6 +12,7 @@ export const FALLBACK_COUNTRIES: Country[] = [
     phone_code: '+254',
     timezone: 'Africa/Nairobi',
     is_active: true,
+    publish_gate: 'link_pending_or_verified',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-01-01T00:00:00Z',
   },
