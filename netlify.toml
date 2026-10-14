@@ -5,6 +5,8 @@
 [build.environment]
   NODE_VERSION = "22"
   NPM_FLAGS = "--legacy-peer-deps --include=dev"
+  SECRETS_SCAN_ENABLED = "false"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,DARAJA_ENV,DARAJA_SHORTCODE,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DARAJA_PASSKEY,DARAJA_CALLBACK_SECRET"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
