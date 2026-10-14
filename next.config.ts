@@ -5,14 +5,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      react: require.resolve('react'),
-      'react-dom': require.resolve('react-dom'),
-    };
-    return config;
-  },
+  poweredByHeader: false,
   experimental: {
     serverActions: {
       allowedOrigins: process.env.ALLOWED_ORIGINS

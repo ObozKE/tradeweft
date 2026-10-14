@@ -24,6 +24,8 @@ export const metadata: Metadata = {
     'Trade your professional services without cash. Nairobi businesses and freelancers exchange web development, legal, accounting, branding, and corporate services on a verified public trust ledger.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   return (
     <div className="space-y-24 pb-20">

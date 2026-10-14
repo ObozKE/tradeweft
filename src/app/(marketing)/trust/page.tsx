@@ -21,6 +21,8 @@ export const metadata: Metadata = {
     'Learn how Trade Weft calculates tamper-evident barter reputation, enforces double-blind review fairness, and maintains an immutable public trust ledger.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function TrustExplainerPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
