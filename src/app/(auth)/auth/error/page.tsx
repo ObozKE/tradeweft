@@ -8,6 +8,8 @@ interface AuthErrorPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function AuthErrorPage({ searchParams }: AuthErrorPageProps) {
   const t = await getTranslations('auth.error');
   const params = await searchParams;

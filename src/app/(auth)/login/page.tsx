@@ -6,6 +6,8 @@ interface LoginPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const t = await getTranslations('auth.login');
   const tCommon = await getTranslations('common');
