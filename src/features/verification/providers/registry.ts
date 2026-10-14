@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import type { PlatformConfig, PlatformKey } from '../types/verification.types';
 
 /**
@@ -6,8 +5,19 @@ import type { PlatformConfig, PlatformKey } from '../types/verification.types';
  * used for manual bio/post verification and domain verification.
  */
 export function generateChallengeCode(): string {
-  const bytes = crypto.randomBytes(4).toString('hex').toUpperCase();
-  return `TW-${bytes.slice(0, 4)}-${bytes.slice(4, 8)}`;
+  const bytes = new Uint8Array(4);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < 4; i++) {
+      bytes[i] = Math.floor(Math.random() * 256);
+    }
+  }
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+  return `TW-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
 }
 
 const RESERVED_GITHUB_PATHS = new Set([

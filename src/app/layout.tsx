@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { IntlProvider } from '@/components/providers/IntlProvider';
 import { poppins } from '@/lib/fonts';
 import './globals.css';
 
@@ -19,9 +19,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={poppins.variable}>
       <body className="min-h-screen bg-background font-sans text-ink antialiased">
-        <NextIntlClientProvider messages={messages}>
+        <IntlProvider messages={messages} locale="en">
           {children}
-        </NextIntlClientProvider>
+        </IntlProvider>
       </body>
     </html>
   );
