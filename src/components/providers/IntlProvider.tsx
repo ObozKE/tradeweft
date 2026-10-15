@@ -8,7 +8,7 @@ export interface IntlProviderProps {
   messages: Record<string, any>;
   locale?: string;
 }
-
+/*nand*/
 export function IntlProvider({
   children,
   messages,
