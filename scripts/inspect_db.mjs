@@ -10,7 +10,7 @@ for (const line of envContent.split('\n')) {
     envVars[match[1].trim()] = match[2].trim();
   }
 }
-
+/* dje */
 const supabaseUrl = envVars.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = envVars.SUPABASE_SERVICE_ROLE_KEY;
 
